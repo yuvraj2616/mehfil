@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Backend Test - Mehfil</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        button {
+            background: #9333ea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 10px 5px;
+            font-size: 14px;
+        }
+        button:hover {
+            background: #7c3aed;
+        }
+        .result {
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .success { border-color: #22c55e; background: #f0fdf4; }
+        .error { border-color: #ef4444; background: #fef2f2; }
+        .form-group {
+            margin: 15px 0;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="email"], input[type="password"], input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🎭 Mehfil Authentication Test</h1>
+        <p>This page tests the authentication system with the MongoDB backend.</p>
+
+        <!-- Backend Health Check -->
+        <section>
+            <h2>🔗 Backend Connection Test</h2>
+            <button onclick="testBackendHealth()">Test Backend Health</button>
+            <div id="healthResult" class="result" style="display: none;"></div>
+        </section>
+
+        <!-- Login Test -->
+        <section>
+            <h2>🔐 Login Test</h2>
+            <div class="form-group">
+                <label for="loginEmail">Email:</label>
+                <input type="email" id="loginEmail" value="test@example.com" placeholder="Enter email">
+            </div>
+            <div class="form-group">
+                <label for="loginPassword">Password:</label>
+                <input type="password" id="loginPassword" value="password123" placeholder="Enter password">
+            </div>
+            <button onclick="testLogin()">Test Login</button>
+            <div id="loginResult" class="result" style="display: none;"></div>
+        </section>
+
+        <!-- Registration Test -->
+        <section>
+            <h2>📝 Registration Test</h2>
+            <div class="form-group">
+                <label for="regName">Name:</label>
+                <input type="text" id="regName" value="Test User" placeholder="Enter full name">
+            </div>
+            <div class="form-group">
+                <label for="regEmail">Email:</label>
+                <input type="email" id="regEmail" value="testuser@example.com" placeholder="Enter email">
+            </div>
+            <div class="form-group">
+                <label for="regPassword">Password:</label>
+                <input type="password" id="regPassword" value="password123" placeholder="Enter password">
+            </div>
+            <div class="form-group">
+                <label for="regPhone">Phone:</label>
+                <input type="text" id="regPhone" value="+1234567890" placeholder="Enter phone">
+            </div>
+            <button onclick="testRegistration()">Test Registration</button>
+            <div id="regResult" class="result" style="display: none;"></div>
+        </section>
+
+        <!-- Authentication Status -->
+        <section>
+            <h2>👤 Authentication Status</h2>
+            <button onclick="checkAuthStatus()">Check Auth Status</button>
+            <button onclick="clearAuth()">Clear Auth Data</button>
+            <div id="authResult" class="result" style="display: none;"></div>
+        </section>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:5000/api';
+
+        function showResult(elementId, data, isSuccess = true) {
+            const element = document.getElementById(elementId);
+            element.style.display = 'block';
+            element.className = 'result ' + (isSuccess ? 'success' : 'error');
+            element.textContent = typeof data === 'object' ? JSON.stringify(data, null, 2) : data;
+        }
+
+        async function testBackendHealth() {
+            try {
+                const response = await fetch(`${API_BASE}/health`);
+                const data = await response.json();
+                showResult('healthResult', data, response.ok);
+            } catch (error) {
+                showResult('healthResult', `Error: ${error.message}`, false);
+            }
+        }
+
+        async function testLogin() {
+            try {
+                const email = document.getElementById('loginEmail').value;
+                const password = document.getElementById('loginPassword').value;
+
+                const response = await fetch(`${API_BASE}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    // Store token for further tests
+                    localStorage.setItem('test_token', data.token);
+                    localStorage.setItem('test_user', JSON.stringify(data.user));
+                }
+
+                showResult('loginResult', data, response.ok && data.success);
+            } catch (error) {
+                showResult('loginResult', `Error: ${error.message}`, false);
+            }
+        }
+
+        async function testRegistration() {
+            try {
+                const name = document.getElementById('regName').value;
+                const email = document.getElementById('regEmail').value;
+                const password = document.getElementById('regPassword').value;
+                const phone = document.getElementById('regPhone').value;
+
+                const response = await fetch(`${API_BASE}/auth/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ 
+                        name, 
+                        email, 
+                        password, 
+                        phone,
+                        role: 'attendee'
+                    })
+                });
+
+                const data = await response.json();
+                showResult('regResult', data, response.ok && data.success);
+            } catch (error) {
+                showResult('regResult', `Error: ${error.message}`, false);
+            }
+        }
+
+        async function checkAuthStatus() {
+            try {
+                const token = localStorage.getItem('test_token');
+                const user = localStorage.getItem('test_user');
+
+                if (!token) {
+                    showResult('authResult', 'No authentication token found', false);
+                    return;
+                }
+
+                // Test the /me endpoint
+                const response = await fetch(`${API_BASE}/auth/me`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const data = await response.json();
+                
+                const result = {
+                    stored_token: token ? 'Present' : 'Missing',
+                    stored_user: user ? JSON.parse(user) : 'Missing',
+                    me_endpoint: data
+                };
+
+                showResult('authResult', result, response.ok && data.success);
+            } catch (error) {
+                showResult('authResult', `Error: ${error.message}`, false);
+            }
+        }
+
+        function clearAuth() {
+            localStorage.removeItem('test_token');
+            localStorage.removeItem('test_user');
+            showResult('authResult', 'Authentication data cleared', true);
+        }
+
+        // Auto-test backend health on page load
+        window.addEventListener('load', () => {
+            setTimeout(testBackendHealth, 500);
+        });
+    </script>
+</body>
+</html>

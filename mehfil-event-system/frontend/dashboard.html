@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Mehfil</title>
+    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="dashboard-page">
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <a href="index.html" class="brand-link">
+                    <i class="fas fa-masks"></i>
+                    <span class="brand-text">Mehfil</span>
+                </a>
+            </div>
+            
+            <div class="nav-menu" id="navMenu">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="events.html" class="nav-link">Events</a>
+                <a href="about.html" class="nav-link">About</a>
+                <a href="contact.html" class="nav-link">Contact</a>
+            </div>
+            
+            <div class="nav-user" id="navUser">
+                <div class="user-dropdown">
+                    <button class="user-btn" id="userBtn">
+                        <img src="assets/images/default-avatar.png" alt="Profile" class="user-avatar" id="userAvatar">
+                        <span class="user-name" id="userName">User</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="dropdown-menu" id="dropdownMenu">
+                        <a href="dashboard.html" class="dropdown-item active">
+                            <i class="fas fa-tachometer-alt"></i> Dashboard
+                        </a>
+                        <a href="profile.html" class="dropdown-item">
+                            <i class="fas fa-user"></i> Profile
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <button class="dropdown-item logout-btn" id="logoutBtn">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="nav-toggle" id="navToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Dashboard Container -->
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="dashboard-sidebar" id="dashboardSidebar">
+            <div class="sidebar-header">
+                <div class="user-info">
+                    <img src="assets/images/default-avatar.png" alt="Profile" class="sidebar-avatar" id="sidebarAvatar">
+                    <div class="user-details">
+                        <h3 id="sidebarUserName">User Name</h3>
+                        <span class="user-role" id="sidebarUserRole">Role</span>
+                    </div>
+                </div>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <ul class="nav-list" id="sidebarNav">
+                    <!-- Navigation items will be populated by JavaScript based on user role -->
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="dashboard-main">
+            <!-- Dashboard Header -->
+            <div class="dashboard-header">
+                <div class="header-content">
+                    <h1 id="dashboardTitle">Dashboard</h1>
+                    <p id="dashboardSubtitle">Welcome back! Here's what's happening.</p>
+                </div>
+                <div class="header-actions" id="headerActions">
+                    <!-- Actions will be populated based on user role -->
+                </div>
+            </div>
+
+            <!-- Dashboard Content -->
+            <div class="dashboard-content" id="dashboardContent">
+                <!-- Content will be populated by JavaScript based on user role -->
+            </div>
+        </main>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay hidden" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <p>Loading...</p>
+    </div>
+
+    <!-- Notification -->
+    <div class="notification hidden" id="notification">
+        <span class="notification-message" id="notificationMessage"></span>
+        <button class="notification-close" id="notificationClose">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+
+    <!-- Scripts -->
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/utils.js"></script>
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/main.js"></script>
+    
+    <script>
+        let currentUser = null;
+        let currentSection = 'overview';
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check authentication
+            if (!auth.isAuthenticated()) {
+                window.location.href = 'auth.html';
+                return;
+            }
+
+            currentUser = auth.getCurrentUser();
+            initializeDashboard();
+            loadDashboardData();
+        });
+
+        function initializeDashboard() {
+            // Update user info
+            document.getElementById('userName').textContent = currentUser.name;
+            document.getElementById('sidebarUserName').textContent = currentUser.name;
+            document.getElementById('sidebarUserRole').textContent = currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1);
+            
+            if (currentUser.avatar) {
+                document.getElementById('userAvatar').src = currentUser.avatar;
+                document.getElementById('sidebarAvatar').src = currentUser.avatar;
+            }
+
+            // Setup sidebar navigation based on role
+            setupSidebarNavigation();
+            
+            // Setup header actions based on role
+            setupHeaderActions();
+            
+            // Load initial content
+            loadDashboardContent('overview');
+        }
+
+        function setupSidebarNavigation() {
+            const sidebarNav = document.getElementById('sidebarNav');
+            let navItems = [];
+
+            // Common navigation items
+            navItems.push(
+                { id: 'overview', icon: 'tachometer-alt', label: 'Overview', active: true },
+                { id: 'bookings', icon: 'ticket-alt', label: 'My Bookings' }
+            );
+
+            // Role-specific navigation items
+            switch (currentUser.role) {
+                case 'attendee':
+                    navItems.push(
+                        { id: 'favorites', icon: 'heart', label: 'Favorites' },
+                        { id: 'reviews', icon: 'star', label: 'My Reviews' }
+                    );
+                    break;
+                
+                case 'artist':
+                    navItems.push(
+                        { id: 'performances', icon: 'microphone', label: 'Performances' },
+                        { id: 'portfolio', icon: 'images', label: 'Portfolio' },
+                        { id: 'earnings', icon: 'coins', label: 'Earnings' }
+                    );
+                    break;
+                
+                case 'organizer':
+                    navItems.push(
+                        { id: 'events', icon: 'calendar-plus', label: 'My Events' },
+                        { id: 'create-event', icon: 'plus-circle', label: 'Create Event' },
+                        { id: 'analytics', icon: 'chart-bar', label: 'Analytics' },
+                        { id: 'payments', icon: 'credit-card', label: 'Payments' }
+                    );
+                    break;
+                
+                case 'admin':
+                    navItems.push(
+                        { id: 'events', icon: 'calendar', label: 'All Events' },
+                        { id: 'users', icon: 'users', label: 'Users' },
+                        { id: 'reports', icon: 'file-alt', label: 'Reports' },
+                        { id: 'settings', icon: 'cog', label: 'Settings' }
+                    );
+                    break;
+            }
+
+            // Add common items at the end
+            navItems.push(
+                { id: 'profile', icon: 'user', label: 'Profile Settings' },
+                { id: 'notifications', icon: 'bell', label: 'Notifications' }
+            );
+
+            // Generate navigation HTML
+            sidebarNav.innerHTML = navItems.map(item => `
+                <li class="nav-item">
+                    <a href="#" class="nav-link ${item.active ? 'active' : ''}" data-section="${item.id}">
+                        <i class="fas fa-${item.icon}"></i>
+                        <span>${item.label}</span>
+                    </a>
+                </li>
+            `).join('');
+
+            // Add click handlers
+            sidebarNav.addEventListener('click', function(e) {
+                if (e.target.classList.contains('nav-link') || e.target.closest('.nav-link')) {
+                    e.preventDefault();
+                    const link = e.target.closest('.nav-link');
+                    const section = link.dataset.section;
+                    
+                    // Update active state
+                    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                    link.classList.add('active');
+                    
+                    // Load content
+                    loadDashboardContent(section);
+                }
+            });
+        }
+
+        function setupHeaderActions() {
+            const headerActions = document.getElementById('headerActions');
+            let actions = [];
+
+            switch (currentUser.role) {
+                case 'organizer':
+                    actions.push(`
+                        <button class="btn btn-primary" onclick="window.location.href='create-event.html'">
+                            <i class="fas fa-plus"></i> Create Event
+                        </button>
+                    `);
+                    break;
+                
+                case 'artist':
+                    actions.push(`
+                        <button class="btn btn-primary" onclick="updatePortfolio()">
+                            <i class="fas fa-upload"></i> Update Portfolio
+                        </button>
+                    `);
+                    break;
+                
+                case 'admin':
+                    actions.push(`
+                        <button class="btn btn-primary" onclick="exportReports()">
+                            <i class="fas fa-download"></i> Export Reports
+                        </button>
+                    `);
+                    break;
+            }
+
+            headerActions.innerHTML = actions.join('');
+        }
+
+        async function loadDashboardData() {
+            try {
+                showLoading();
+                
+                // Load dashboard data based on user role
+                const promises = [
+                    api.getDashboardStats(currentUser.role),
+                    api.getUserBookings(),
+                    api.getNotifications()
+                ];
+
+                if (currentUser.role === 'organizer') {
+                    promises.push(api.getOrganizerEvents());
+                } else if (currentUser.role === 'artist') {
+                    promises.push(api.getArtistPerformances());
+                } else if (currentUser.role === 'admin') {
+                    promises.push(api.getAdminStats());
+                }
+
+                const results = await Promise.all(promises);
+                
+                // Store dashboard data
+                window.dashboardData = {
+                    stats: results[0],
+                    bookings: results[1],
+                    notifications: results[2],
+                    roleSpecific: results[3] || null
+                };
+
+                hideLoading();
+                loadDashboardContent('overview');
+            } catch (error) {
+                console.error('Error loading dashboard data:', error);
+                hideLoading();
+                showNotification('Failed to load dashboard data', 'error');
+            }
+        }
+
+        function loadDashboardContent(section) {
+            currentSection = section;
+            const content = document.getElementById('dashboardContent');
+            
+            switch (section) {
+                case 'overview':
+                    content.innerHTML = generateOverviewContent();
+                    break;
+                case 'bookings':
+                    content.innerHTML = generateBookingsContent();
+                    break;
+                case 'events':
+                    content.innerHTML = generateEventsContent();
+                    break;
+                case 'create-event':
+                    window.location.href = 'create-event.html';
+                    return;
+                case 'profile':
+                    window.location.href = 'profile.html';
+                    return;
+                default:
+                    content.innerHTML = generateDefaultContent(section);
+            }
+
+            // Update dashboard title
+            const sectionTitle = document.querySelector(`[data-section="${section}"] span`);
+            if (sectionTitle) {
+                document.getElementById('dashboardTitle').textContent = sectionTitle.textContent;
+            }
+        }
+
+        function generateOverviewContent() {
+            const stats = window.dashboardData?.stats || {};
+            
+            let html = `
+                <div class="dashboard-stats">
+                    <div class="stats-grid">
+            `;
+
+            // Generate stats based on user role
+            switch (currentUser.role) {
+                case 'attendee':
+                    html += `
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-ticket-alt"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3>${stats.totalBookings || 0}</h3>
+                                <p>Total Bookings</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-calendar-check"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3>${stats.eventsAttended || 0}</h3>
+                                <p>Events Attended</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-heart"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3>${stats.favorites || 0}</h3>
+                                <p>Favorite Events</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3>${stats.reviews || 0}</h3>
+                                <p>Reviews Given</p>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                
+                case 'artist':
+                    html += `
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-microphone"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3>${stats.totalPerformances || 0}</h3>
+                                <p>Total Performances</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-coins"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3>Rs. ${stats.totalEarnings || 0}</h3>
+                                <p>Total Earnings</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3>${stats.averageRating || 0}</h3>
+                                <p>Average Rating</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-calendar"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3>${stats.upcomingPerformances || 0}</h3>
+                                <p>Upcoming Shows</p>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                
+                case 'organizer':
+                    html += `
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-calendar-plus"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3>${stats.totalEvents || 0}</h3>
+                                <p>Events Created</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3>${stats.totalAttendees || 0}</h3>
+                                <p>Total Attendees</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-coins"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3>Rs. ${stats.totalRevenue || 0}</h3>
+                                <p>Total Revenue</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-calendar-check"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3>${stats.activeEvents || 0}</h3>
+                                <p>Active Events</p>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                
+                case 'admin':
+                    html += `
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-calendar"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3>${stats.totalEvents || 0}</h3>
+                                <p>Total Events</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3>${stats.totalUsers || 0}</h3>
+                                <p>Total Users</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-ticket-alt"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3>${stats.totalBookings || 0}</h3>
+                                <p>Total Bookings</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-coins"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3>Rs. ${stats.totalRevenue || 0}</h3>
+                                <p>Platform Revenue</p>
+                            </div>
+                        </div>
+                    `;
+                    break;
+            }
+
+            html += `
+                    </div>
+                </div>
+                
+                <div class="dashboard-widgets">
+                    <div class="widget-grid">
+                        <div class="widget recent-activity">
+                            <div class="widget-header">
+                                <h3>Recent Activity</h3>
+                                <a href="#" class="widget-action">View All</a>
+                            </div>
+                            <div class="widget-content">
+                                <div class="activity-list" id="recentActivity">
+                                    <div class="activity-item">
+                                        <div class="activity-icon">
+                                            <i class="fas fa-ticket-alt"></i>
+                                        </div>
+                                        <div class="activity-content">
+                                            <p>No recent activity</p>
+                                            <span class="activity-time">--</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="widget upcoming-events">
+                            <div class="widget-header">
+                                <h3>Upcoming Events</h3>
+                                <a href="events.html" class="widget-action">Browse All</a>
+                            </div>
+                            <div class="widget-content">
+                                <div class="upcoming-events-list" id="upcomingEvents">
+                                    <p>No upcoming events</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            return html;
+        }
+
+        function generateBookingsContent() {
+            const bookings = window.dashboardData?.bookings || [];
+            
+            let html = `
+                <div class="bookings-section">
+                    <div class="section-header">
+                        <h2>My Bookings</h2>
+                        <div class="booking-filters">
+                            <select id="bookingStatusFilter" onchange="filterBookings()">
+                                <option value="">All Bookings</option>
+                                <option value="confirmed">Confirmed</option>
+                                <option value="pending">Pending</option>
+                                <option value="cancelled">Cancelled</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="bookings-grid" id="bookingsGrid">
+            `;
+
+            if (bookings.length > 0) {
+                bookings.forEach(booking => {
+                    html += `
+                        <div class="booking-card">
+                            <div class="booking-image">
+                                <img src="${booking.event.image || 'assets/images/event-placeholder.jpg'}" alt="${booking.event.title}">
+                                <div class="booking-status ${booking.status}">${booking.status}</div>
+                            </div>
+                            <div class="booking-content">
+                                <h3>${booking.event.title}</h3>
+                                <div class="booking-meta">
+                                    <div class="booking-date">
+                                        <i class="fas fa-calendar"></i>
+                                        ${formatDate(booking.event.date)}
+                                    </div>
+                                    <div class="booking-location">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        ${booking.event.location}
+                                    </div>
+                                    <div class="booking-tickets">
+                                        <i class="fas fa-ticket-alt"></i>
+                                        ${booking.quantity} ${booking.quantity === 1 ? 'ticket' : 'tickets'}
+                                    </div>
+                                </div>
+                                <div class="booking-actions">
+                                    <button class="btn btn-primary" onclick="viewBookingDetails('${booking._id}')">
+                                        View Details
+                                    </button>
+                                    ${booking.status === 'confirmed' ? `
+                                        <button class="btn btn-outline" onclick="downloadTicket('${booking._id}')">
+                                            <i class="fas fa-download"></i> Download Ticket
+                                        </button>
+                                    ` : ''}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            } else {
+                html += `
+                    <div class="empty-state">
+                        <i class="fas fa-ticket-alt"></i>
+                        <h3>No bookings yet</h3>
+                        <p>Start exploring events and make your first booking!</p>
+                        <a href="events.html" class="btn btn-primary">Browse Events</a>
+                    </div>
+                `;
+            }
+
+            html += `
+                    </div>
+                </div>
+            `;
+
+            return html;
+        }
+
+        function generateEventsContent() {
+            // This would be different based on user role
+            if (currentUser.role === 'organizer') {
+                return generateOrganizerEventsContent();
+            } else if (currentUser.role === 'admin') {
+                return generateAdminEventsContent();
+            } else {
+                return generateDefaultContent('events');
+            }
+        }
+
+        function generateOrganizerEventsContent() {
+            const events = window.dashboardData?.roleSpecific?.events || [];
+            
+            let html = `
+                <div class="events-section">
+                    <div class="section-header">
+                        <h2>My Events</h2>
+                        <div class="section-actions">
+                            <button class="btn btn-primary" onclick="window.location.href='create-event.html'">
+                                <i class="fas fa-plus"></i> Create Event
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="events-grid">
+            `;
+
+            events.forEach(event => {
+                html += `
+                    <div class="event-card organizer">
+                        <div class="event-image">
+                            <img src="${event.image || 'assets/images/event-placeholder.jpg'}" alt="${event.title}">
+                            <div class="event-status ${event.status}">${event.status}</div>
+                        </div>
+                        <div class="event-content">
+                            <h3>${event.title}</h3>
+                            <div class="event-stats">
+                                <div class="stat">
+                                    <i class="fas fa-users"></i>
+                                    ${event.attendeesCount}/${event.maxCapacity}
+                                </div>
+                                <div class="stat">
+                                    <i class="fas fa-coins"></i>
+                                    Rs. ${event.revenue || 0}
+                                </div>
+                            </div>
+                            <div class="event-actions">
+                                <button class="btn btn-primary" onclick="editEvent('${event._id}')">
+                                    <i class="fas fa-edit"></i> Edit
+                                </button>
+                                <button class="btn btn-outline" onclick="viewEventAnalytics('${event._id}')">
+                                    <i class="fas fa-chart-bar"></i> Analytics
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += `
+                    </div>
+                </div>
+            `;
+
+            return html;
+        }
+
+        function generateDefaultContent(section) {
+            return `
+                <div class="default-content">
+                    <div class="content-placeholder">
+                        <i class="fas fa-cog fa-spin"></i>
+                        <h3>${section.charAt(0).toUpperCase() + section.slice(1)}</h3>
+                        <p>This section is under development.</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Event handlers
+        function viewBookingDetails(bookingId) {
+            window.location.href = `booking-details.html?id=${bookingId}`;
+        }
+
+        function downloadTicket(bookingId) {
+            // Implement ticket download
+            showNotification('Downloading ticket...', 'info');
+        }
+
+        function editEvent(eventId) {
+            window.location.href = `create-event.html?edit=${eventId}`;
+        }
+
+        function viewEventAnalytics(eventId) {
+            // Implement analytics view
+            showNotification('Analytics feature coming soon', 'info');
+        }
+
+        function filterBookings() {
+            const status = document.getElementById('bookingStatusFilter').value;
+            // Implement booking filtering
+            console.log('Filtering bookings by status:', status);
+        }
+
+        function updatePortfolio() {
+            // Implement portfolio update
+            showNotification('Portfolio update feature coming soon', 'info');
+        }
+
+        function exportReports() {
+            // Implement report export
+            showNotification('Exporting reports...', 'info');
+        }
+    </script>
+</body>
+</html>

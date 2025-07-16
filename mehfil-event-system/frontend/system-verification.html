@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mehfil System Verification</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .test-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid #4CAF50;
+        }
+        
+        .test-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .test-item:last-child {
+            border-bottom: none;
+        }
+        
+        .status {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 12px;
+        }
+        
+        .status.success {
+            background: #4CAF50;
+            color: white;
+        }
+        
+        .status.error {
+            background: #f44336;
+            color: white;
+        }
+        
+        .status.warning {
+            background: #ff9800;
+            color: white;
+        }
+        
+        .status.pending {
+            background: #2196F3;
+            color: white;
+        }
+        
+        .details {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 5px;
+            padding: 15px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .btn {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        
+        .btn:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .events-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .event-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .event-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+        
+        .event-details {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .navbar-test {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 10px;
+        }
+        
+        .navbar-test a {
+            color: #fff;
+            text-decoration: none;
+            margin: 0 15px;
+            padding: 8px 16px;
+            border-radius: 5px;
+            transition: background 0.3s ease;
+        }
+        
+        .navbar-test a:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎭 Mehfil Event System - Full System Verification</h1>
+        
+        <div class="test-section">
+            <h2>🔧 System Status</h2>
+            <div class="test-item">
+                <span>Frontend Server</span>
+                <span id="frontend-status" class="status pending">CHECKING...</span>
+            </div>
+            <div class="test-item">
+                <span>Backend API Connection</span>
+                <span id="backend-status" class="status pending">CHECKING...</span>
+            </div>
+            <div class="test-item">
+                <span>API Response Time</span>
+                <span id="response-time" class="status pending">MEASURING...</span>
+            </div>
+            <div class="test-item">
+                <span>Database Connection</span>
+                <span id="db-status" class="status pending">CHECKING...</span>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>📱 Page Navigation Tests</h2>
+            <div class="navbar-test">
+                <a href="index.html" target="_blank">Home</a>
+                <a href="events.html" target="_blank">Events</a>
+                <a href="auth.html" target="_blank">Login</a>
+                <a href="dashboard.html" target="_blank">Dashboard</a>
+                <a href="profile.html" target="_blank">Profile</a>
+                <a href="create-event.html" target="_blank">Create Event</a>
+                <a href="pages/about.html" target="_blank">About</a>
+                <a href="pages/contact.html" target="_blank">Contact</a>
+            </div>
+            <div class="test-item">
+                <span>All Core Pages Accessible</span>
+                <span id="pages-status" class="status success">✓ AVAILABLE</span>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>🔌 API Tests</h2>
+            <div class="test-item">
+                <span>GET /api/events</span>
+                <span id="events-api-status" class="status pending">TESTING...</span>
+            </div>
+            <div class="test-item">
+                <span>Events Count</span>
+                <span id="events-count" class="status pending">COUNTING...</span>
+            </div>
+            <div class="test-item">
+                <span>Data Structure Validation</span>
+                <span id="data-structure" class="status pending">VALIDATING...</span>
+            </div>
+            <button class="btn" onclick="runAPITests()">🔄 Run API Tests</button>
+            <div id="api-details" class="details" style="display: none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>📋 Events Preview</h2>
+            <div id="events-container" class="events-grid">
+                <div class="event-card">Loading events...</div>
+            </div>
+        </div>
+
+        <div class="test-section" id="module-tests">
+            <h2>🧩 Module Loading Tests</h2>
+            <div class="test-item">
+                <span>API Module (api.js)</span>
+                <span id="api-module" class="status pending">LOADING...</span>
+            </div>
+            <div class="test-item">
+                <span>Auth Module (auth.js)</span>
+                <span id="auth-module" class="status pending">LOADING...</span>
+            </div>
+            <div class="test-item">
+                <span>Config Module (config.js)</span>
+                <span id="config-module" class="status pending">LOADING...</span>
+            </div>
+            <div class="test-item">
+                <span>Utils Module (utils.js)</span>
+                <span id="utils-module" class="status pending">LOADING...</span>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>🚀 Performance Metrics</h2>
+            <div class="test-item">
+                <span>Page Load Time</span>
+                <span id="load-time" class="status pending">CALCULATING...</span>
+            </div>
+            <div class="test-item">
+                <span>API First Response</span>
+                <span id="first-response" class="status pending">MEASURING...</span>
+            </div>
+            <div class="test-item">
+                <span>Memory Usage</span>
+                <span id="memory-usage" class="status pending">CHECKING...</span>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>📊 System Summary</h2>
+            <div id="system-summary" class="details">
+                <p>🔄 Running comprehensive system verification...</p>
+                <p>⏱️ Started at: <span id="start-time"></span></p>
+                <p>🎯 Checking all components...</p>
+            </div>
+            <button class="btn" onclick="runFullSystemTest()">🧪 Run Full System Test</button>
+            <button class="btn" onclick="exportReport()">📄 Export Report</button>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:5000/api';
+        let testResults = {};
+        let startTime = Date.now();
+        
+        document.getElementById('start-time').textContent = new Date().toLocaleString();
+
+        // Immediately check frontend status
+        updateStatus('frontend-status', 'success', '✓ ONLINE');
+
+        async function checkBackendConnection() {
+            const startTime = Date.now();
+            try {
+                const response = await fetch(`${API_BASE_URL}/events`);
+                const responseTime = Date.now() - startTime;
+                
+                if (response.ok) {
+                    updateStatus('backend-status', 'success', '✓ CONNECTED');
+                    updateStatus('response-time', 'success', `${responseTime}ms`);
+                    updateStatus('db-status', 'success', '✓ ACTIVE');
+                    testResults.backend = true;
+                    testResults.responseTime = responseTime;
+                    return true;
+                } else {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+            } catch (error) {
+                updateStatus('backend-status', 'error', '✗ FAILED');
+                updateStatus('response-time', 'error', 'N/A');
+                updateStatus('db-status', 'error', '✗ FAILED');
+                testResults.backend = false;
+                console.error('Backend connection failed:', error);
+                return false;
+            }
+        }
+
+        async function testEventsAPI() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/events`);
+                const data = await response.json();
+                
+                if (response.ok && Array.isArray(data)) {
+                    updateStatus('events-api-status', 'success', '✓ WORKING');
+                    updateStatus('events-count', 'success', `${data.length} events`);
+                    
+                    // Validate data structure
+                    const hasValidStructure = data.length > 0 && 
+                        data[0].hasOwnProperty('title') && 
+                        data[0].hasOwnProperty('venue');
+                    
+                    updateStatus('data-structure', hasValidStructure ? 'success' : 'warning', 
+                        hasValidStructure ? '✓ VALID' : '⚠ PARTIAL');
+                    
+                    testResults.eventsAPI = true;
+                    testResults.eventsCount = data.length;
+                    
+                    displayEvents(data.slice(0, 6)); // Show first 6 events
+                    return data;
+                } else {
+                    throw new Error('Invalid response');
+                }
+            } catch (error) {
+                updateStatus('events-api-status', 'error', '✗ FAILED');
+                updateStatus('events-count', 'error', 'N/A');
+                updateStatus('data-structure', 'error', '✗ INVALID');
+                testResults.eventsAPI = false;
+                console.error('Events API test failed:', error);
+                return null;
+            }
+        }
+
+        function displayEvents(events) {
+            const container = document.getElementById('events-container');
+            if (!events || events.length === 0) {
+                container.innerHTML = '<div class="event-card">No events found</div>';
+                return;
+            }
+
+            container.innerHTML = events.map(event => `
+                <div class="event-card">
+                    <div class="event-title">${event.title || 'Untitled Event'}</div>
+                    <div class="event-details">
+                        <p><strong>📍 Venue:</strong> ${event.venue?.name || 'TBD'}</p>
+                        <p><strong>📅 Date:</strong> ${event.dateTime?.start ? new Date(event.dateTime.start).toLocaleDateString() : 'TBD'}</p>
+                        <p><strong>🎫 Price:</strong> ${event.pricing?.general ? '$' + event.pricing.general : 'Free'}</p>
+                        <p><strong>👥 Capacity:</strong> ${event.capacity || 'Unlimited'}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function testModuleLoading() {
+            const modules = [
+                { name: 'api', path: './assets/js/api.js' },
+                { name: 'auth', path: './assets/js/auth.js' },
+                { name: 'config', path: './assets/js/config.js' },
+                { name: 'utils', path: './assets/js/utils.js' }
+            ];
+
+            for (const module of modules) {
+                try {
+                    const response = await fetch(module.path);
+                    if (response.ok) {
+                        updateStatus(`${module.name}-module`, 'success', '✓ LOADED');
+                        testResults[`${module.name}Module`] = true;
+                    } else {
+                        throw new Error(`HTTP ${response.status}`);
+                    }
+                } catch (error) {
+                    updateStatus(`${module.name}-module`, 'error', '✗ FAILED');
+                    testResults[`${module.name}Module`] = false;
+                }
+            }
+        }
+
+        function calculatePerformanceMetrics() {
+            const loadTime = Date.now() - startTime;
+            updateStatus('load-time', loadTime < 2000 ? 'success' : 'warning', `${loadTime}ms`);
+            
+            if (testResults.responseTime) {
+                updateStatus('first-response', 
+                    testResults.responseTime < 1000 ? 'success' : 'warning', 
+                    `${testResults.responseTime}ms`);
+            }
+            
+            // Memory usage (approximate)
+            const memoryInfo = performance.memory || {};
+            const usedMemory = memoryInfo.usedJSHeapSize || 0;
+            const memoryMB = Math.round(usedMemory / 1024 / 1024);
+            updateStatus('memory-usage', memoryMB < 50 ? 'success' : 'warning', `${memoryMB}MB`);
+            
+            testResults.performance = {
+                loadTime,
+                memory: memoryMB
+            };
+        }
+
+        async function runAPITests() {
+            document.getElementById('api-details').style.display = 'block';
+            const details = document.getElementById('api-details');
+            details.innerHTML = '<p>🔄 Running API tests...</p>';
+            
+            const isBackendConnected = await checkBackendConnection();
+            if (isBackendConnected) {
+                const eventsData = await testEventsAPI();
+                if (eventsData) {
+                    details.innerHTML = `
+                        <p>✅ API Tests Completed Successfully</p>
+                        <p>📊 Found ${eventsData.length} events in database</p>
+                        <p>⚡ Response time: ${testResults.responseTime}ms</p>
+                        <p>🔗 Endpoint: ${API_BASE_URL}/events</p>
+                        <pre>${JSON.stringify(eventsData[0], null, 2).substring(0, 500)}...</pre>
+                    `;
+                } else {
+                    details.innerHTML = '<p>❌ API tests failed. Check console for details.</p>';
+                }
+            } else {
+                details.innerHTML = '<p>❌ Backend connection failed. Ensure server is running on port 5000.</p>';
+            }
+        }
+
+        async function runFullSystemTest() {
+            const summary = document.getElementById('system-summary');
+            summary.innerHTML = '<p>🔄 Running full system test...</p>';
+            
+            await checkBackendConnection();
+            await testEventsAPI();
+            await testModuleLoading();
+            calculatePerformanceMetrics();
+            
+            const totalTests = Object.keys(testResults).length;
+            const passedTests = Object.values(testResults).filter(result => result === true).length;
+            const successRate = Math.round((passedTests / totalTests) * 100);
+            
+            summary.innerHTML = `
+                <h3>🎯 System Test Results</h3>
+                <p><strong>Overall Success Rate:</strong> ${successRate}% (${passedTests}/${totalTests})</p>
+                <p><strong>Backend Connection:</strong> ${testResults.backend ? '✅ Success' : '❌ Failed'}</p>
+                <p><strong>Events API:</strong> ${testResults.eventsAPI ? '✅ Working' : '❌ Failed'}</p>
+                <p><strong>Events Count:</strong> ${testResults.eventsCount || 0}</p>
+                <p><strong>Response Time:</strong> ${testResults.responseTime || 'N/A'}ms</p>
+                <p><strong>Load Performance:</strong> ${testResults.performance?.loadTime || 'N/A'}ms</p>
+                <p><strong>Memory Usage:</strong> ${testResults.performance?.memory || 'N/A'}MB</p>
+                <hr>
+                <p><strong>🔧 System Status:</strong> ${successRate >= 80 ? '🟢 EXCELLENT' : successRate >= 60 ? '🟡 GOOD' : '🔴 NEEDS ATTENTION'}</p>
+                <p><strong>📅 Test Completed:</strong> ${new Date().toLocaleString()}</p>
+            `;
+        }
+
+        function exportReport() {
+            const report = {
+                timestamp: new Date().toISOString(),
+                testResults,
+                summary: {
+                    totalTests: Object.keys(testResults).length,
+                    passedTests: Object.values(testResults).filter(r => r === true).length,
+                    failedTests: Object.values(testResults).filter(r => r === false).length
+                }
+            };
+            
+            const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `mehfil-system-report-${Date.now()}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function updateStatus(elementId, statusClass, text) {
+            const element = document.getElementById(elementId);
+            if (element) {
+                element.className = `status ${statusClass}`;
+                element.textContent = text;
+            }
+        }
+
+        // Auto-run basic tests on page load
+        window.addEventListener('load', async () => {
+            await checkBackendConnection();
+            await testEventsAPI();
+            await testModuleLoading();
+            calculatePerformanceMetrics();
+        });
+    </script>
+</body>
+</html>

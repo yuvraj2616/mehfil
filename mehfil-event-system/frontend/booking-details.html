@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Details - Mehfil</title>
+    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <a href="index.html" class="brand-link">
+                    <i class="fas fa-masks"></i>
+                    <span class="brand-text">Mehfil</span>
+                </a>
+            </div>
+            
+            <div class="nav-menu" id="navMenu">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="events.html" class="nav-link">Events</a>
+                <a href="about.html" class="nav-link">About</a>
+                <a href="contact.html" class="nav-link">Contact</a>
+            </div>
+            
+            <div class="nav-user" id="navUser">
+                <div class="user-dropdown">
+                    <button class="user-btn" id="userBtn">
+                        <img src="assets/images/default-avatar.png" alt="Profile" class="user-avatar" id="userAvatar">
+                        <span class="user-name" id="userName">User</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="dropdown-menu" id="dropdownMenu">
+                        <a href="dashboard.html" class="dropdown-item">
+                            <i class="fas fa-tachometer-alt"></i> Dashboard
+                        </a>
+                        <a href="profile.html" class="dropdown-item">
+                            <i class="fas fa-user"></i> Profile
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <button class="dropdown-item logout-btn" id="logoutBtn">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="nav-toggle" id="navToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Booking Details Loading -->
+    <div class="page-loading" id="pageLoading">
+        <div class="loading-spinner"></div>
+        <p>Loading booking details...</p>
+    </div>
+
+    <!-- Booking Details Content -->
+    <div class="booking-details-page hidden" id="bookingDetailsPage">
+        <div class="container">
+            <!-- Booking Header -->
+            <div class="booking-header">
+                <div class="breadcrumb">
+                    <a href="dashboard.html">Dashboard</a>
+                    <i class="fas fa-chevron-right"></i>
+                    <a href="dashboard.html">My Bookings</a>
+                    <i class="fas fa-chevron-right"></i>
+                    <span>Booking Details</span>
+                </div>
+                
+                <div class="booking-title-section">
+                    <h1>Booking Confirmation</h1>
+                    <div class="booking-status" id="bookingStatus">
+                        <span class="status-badge confirmed">Confirmed</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Booking Content -->
+            <div class="booking-content">
+                <div class="booking-grid">
+                    <!-- Main Booking Info -->
+                    <div class="booking-main">
+                        <!-- Event Information -->
+                        <div class="booking-section">
+                            <h2>Event Information</h2>
+                            <div class="event-info-card">
+                                <div class="event-image">
+                                    <img id="eventImage" src="" alt="Event Image">
+                                </div>
+                                <div class="event-details">
+                                    <h3 id="eventTitle"></h3>
+                                    <div class="event-meta">
+                                        <div class="meta-item">
+                                            <i class="fas fa-calendar"></i>
+                                            <span id="eventDate"></span>
+                                        </div>
+                                        <div class="meta-item">
+                                            <i class="fas fa-clock"></i>
+                                            <span id="eventTime"></span>
+                                        </div>
+                                        <div class="meta-item">
+                                            <i class="fas fa-map-marker-alt"></i>
+                                            <span id="eventLocation"></span>
+                                        </div>
+                                        <div class="meta-item">
+                                            <i class="fas fa-tag"></i>
+                                            <span id="eventCategory"></span>
+                                        </div>
+                                    </div>
+                                    <div class="event-actions">
+                                        <button class="btn btn-outline" onclick="viewEventDetails()">
+                                            <i class="fas fa-eye"></i> View Event Details
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Booking Summary -->
+                        <div class="booking-section">
+                            <h2>Booking Summary</h2>
+                            <div class="booking-summary-card">
+                                <div class="summary-item">
+                                    <span class="label">Booking Reference:</span>
+                                    <span class="value" id="bookingReference"></span>
+                                </div>
+                                <div class="summary-item">
+                                    <span class="label">Booking Date:</span>
+                                    <span class="value" id="bookingDate"></span>
+                                </div>
+                                <div class="summary-item">
+                                    <span class="label">Number of Tickets:</span>
+                                    <span class="value" id="ticketQuantity"></span>
+                                </div>
+                                <div class="summary-item">
+                                    <span class="label">Price per Ticket:</span>
+                                    <span class="value" id="ticketPrice"></span>
+                                </div>
+                                <div class="summary-item total">
+                                    <span class="label">Total Amount:</span>
+                                    <span class="value" id="totalAmount"></span>
+                                </div>
+                                <div class="summary-item">
+                                    <span class="label">Payment Status:</span>
+                                    <span class="value payment-status" id="paymentStatus"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- QR Code Section -->
+                        <div class="booking-section" id="qrCodeSection">
+                            <h2>Your Ticket</h2>
+                            <div class="ticket-card">
+                                <div class="ticket-qr">
+                                    <div id="qrCode"></div>
+                                    <p>Show this QR code at the event entrance</p>
+                                </div>
+                                <div class="ticket-info">
+                                    <h4>Digital Ticket</h4>
+                                    <p>This QR code serves as your entry ticket. Please ensure your phone is charged and the QR code is clearly visible when arriving at the venue.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Attendee Information -->
+                        <div class="booking-section">
+                            <h2>Attendee Information</h2>
+                            <div class="attendee-card">
+                                <div class="attendee-details">
+                                    <div class="detail-item">
+                                        <span class="label">Name:</span>
+                                        <span class="value" id="attendeeName"></span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="label">Email:</span>
+                                        <span class="value" id="attendeeEmail"></span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="label">Phone:</span>
+                                        <span class="value" id="attendeePhone"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Special Instructions -->
+                        <div class="booking-section" id="specialInstructions">
+                            <h2>Important Information</h2>
+                            <div class="instructions-card">
+                                <div class="instruction-item">
+                                    <i class="fas fa-clock"></i>
+                                    <div>
+                                        <h4>Arrival Time</h4>
+                                        <p>Please arrive at least 30 minutes before the event starts for check-in and seating.</p>
+                                    </div>
+                                </div>
+                                <div class="instruction-item">
+                                    <i class="fas fa-id-card"></i>
+                                    <div>
+                                        <h4>ID Required</h4>
+                                        <p>Please bring a valid ID for verification at the entrance.</p>
+                                    </div>
+                                </div>
+                                <div class="instruction-item" id="photoPolicy">
+                                    <i class="fas fa-camera"></i>
+                                    <div>
+                                        <h4>Photography Policy</h4>
+                                        <p id="photoPolicyText">Photography and video recording allowed during the event.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sidebar -->
+                    <div class="booking-sidebar">
+                        <!-- Quick Actions -->
+                        <div class="sidebar-section">
+                            <h3>Quick Actions</h3>
+                            <div class="action-buttons">
+                                <button class="btn btn-primary btn-large" onclick="downloadTicket()">
+                                    <i class="fas fa-download"></i> Download Ticket
+                                </button>
+                                <button class="btn btn-outline" onclick="shareBooking()">
+                                    <i class="fas fa-share"></i> Share
+                                </button>
+                                <button class="btn btn-outline" onclick="addToCalendar()">
+                                    <i class="fas fa-calendar-plus"></i> Add to Calendar
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Contact Support -->
+                        <div class="sidebar-section">
+                            <h3>Need Help?</h3>
+                            <div class="support-info">
+                                <p>If you have any questions about your booking or the event, please don't hesitate to contact us.</p>
+                                <div class="support-buttons">
+                                    <button class="btn btn-outline btn-sm" onclick="contactOrganizer()">
+                                        <i class="fas fa-user"></i> Contact Organizer
+                                    </button>
+                                    <button class="btn btn-outline btn-sm" onclick="contactSupport()">
+                                        <i class="fas fa-headset"></i> Customer Support
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Refund Policy -->
+                        <div class="sidebar-section">
+                            <h3>Cancellation & Refund</h3>
+                            <div class="refund-info">
+                                <p id="refundPolicy">Full refund available up to 24 hours before the event.</p>
+                                <div class="refund-actions" id="refundActions">
+                                    <button class="btn btn-outline btn-sm" onclick="cancelBooking()">
+                                        <i class="fas fa-times"></i> Cancel Booking
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Event Updates -->
+                        <div class="sidebar-section">
+                            <h3>Event Updates</h3>
+                            <div class="updates-list" id="eventUpdates">
+                                <div class="update-item">
+                                    <i class="fas fa-info-circle"></i>
+                                    <div>
+                                        <p>No recent updates for this event.</p>
+                                        <small>We'll notify you if anything changes.</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Booking Not Found -->
+    <div class="booking-not-found hidden" id="bookingNotFound">
+        <div class="container">
+            <div class="not-found-content">
+                <i class="fas fa-ticket-alt"></i>
+                <h2>Booking Not Found</h2>
+                <p>The booking you're looking for doesn't exist or you don't have access to it.</p>
+                <a href="dashboard.html" class="btn btn-primary">Go to Dashboard</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cancel Booking Modal -->
+    <div class="modal hidden" id="cancelBookingModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Cancel Booking</h3>
+                <button class="modal-close" onclick="closeModal('cancelBookingModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="cancel-warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <h4>Are you sure you want to cancel this booking?</h4>
+                    <p>This action cannot be undone. Please review the refund policy before proceeding.</p>
+                </div>
+                <div class="refund-details" id="refundDetails">
+                    <h5>Refund Information:</h5>
+                    <div class="refund-calculation">
+                        <div class="refund-row">
+                            <span>Original Amount:</span>
+                            <span id="originalAmount">Rs. 0</span>
+                        </div>
+                        <div class="refund-row">
+                            <span>Processing Fee:</span>
+                            <span id="processingFee">Rs. 0</span>
+                        </div>
+                        <div class="refund-row total">
+                            <span>Refund Amount:</span>
+                            <span id="refundAmount">Rs. 0</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="cancel-reason">
+                    <label for="cancelReason">Reason for cancellation (optional):</label>
+                    <textarea id="cancelReason" rows="3" placeholder="Please let us know why you're cancelling..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('cancelBookingModal')">Keep Booking</button>
+                <button class="btn btn-danger" onclick="confirmCancellation()">Cancel Booking</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay hidden" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <p>Processing...</p>
+    </div>
+
+    <!-- Notification -->
+    <div class="notification hidden" id="notification">
+        <span class="notification-message" id="notificationMessage"></span>
+        <button class="notification-close" id="notificationClose">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/utils.js"></script>
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/main.js"></script>
+    
+    <script>
+        let currentBooking = null;
+        let currentEvent = null;
+
+        // Initialize booking details page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check authentication
+            if (!auth.isAuthenticated()) {
+                window.location.href = 'auth.html';
+                return;
+            }
+
+            const bookingId = getBookingIdFromUrl();
+            if (bookingId) {
+                loadBookingDetails(bookingId);
+            } else {
+                showBookingNotFound();
+            }
+        });
+
+        function getBookingIdFromUrl() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('id');
+        }
+
+        async function loadBookingDetails(bookingId) {
+            const loadingEl = document.getElementById('pageLoading');
+            const contentEl = document.getElementById('bookingDetailsPage');
+            const notFoundEl = document.getElementById('bookingNotFound');
+
+            try {
+                loadingEl.classList.remove('hidden');
+                contentEl.classList.add('hidden');
+                notFoundEl.classList.add('hidden');
+
+                const response = await api.getBookingDetails(bookingId);
+                
+                if (response.success && response.booking) {
+                    currentBooking = response.booking;
+                    currentEvent = response.booking.event;
+                    
+                    displayBookingDetails(response.booking);
+                    generateQRCode(bookingId);
+                    
+                    loadingEl.classList.add('hidden');
+                    contentEl.classList.remove('hidden');
+                } else {
+                    throw new Error('Booking not found');
+                }
+            } catch (error) {
+                console.error('Error loading booking details:', error);
+                loadingEl.classList.add('hidden');
+                showBookingNotFound();
+            }
+        }
+
+        function displayBookingDetails(booking) {
+            // Update page title
+            document.title = `Booking #${booking.reference} - Mehfil`;
+
+            // Booking status
+            const statusEl = document.getElementById('bookingStatus');
+            statusEl.innerHTML = `<span class="status-badge ${booking.status}">${booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}</span>`;
+
+            // Event information
+            document.getElementById('eventImage').src = booking.event.image || 'assets/images/event-placeholder.jpg';
+            document.getElementById('eventTitle').textContent = booking.event.title;
+            document.getElementById('eventDate').textContent = formatDate(booking.event.date);
+            document.getElementById('eventTime').textContent = formatTime(booking.event.date);
+            document.getElementById('eventLocation').textContent = booking.event.isOnline ? 
+                'Online Event' : `${booking.event.location}, ${booking.event.city}`;
+            document.getElementById('eventCategory').textContent = booking.event.category;
+
+            // Booking summary
+            document.getElementById('bookingReference').textContent = booking.reference;
+            document.getElementById('bookingDate').textContent = formatDate(booking.createdAt);
+            document.getElementById('ticketQuantity').textContent = booking.quantity;
+            document.getElementById('ticketPrice').textContent = booking.event.ticketPrice === 0 ? 'Free' : `Rs. ${booking.event.ticketPrice}`;
+            document.getElementById('totalAmount').textContent = booking.totalAmount === 0 ? 'Free' : `Rs. ${booking.totalAmount}`;
+            
+            // Payment status
+            const paymentStatusEl = document.getElementById('paymentStatus');
+            paymentStatusEl.textContent = booking.paymentStatus || 'Pending';
+            paymentStatusEl.className = `value payment-status ${booking.paymentStatus || 'pending'}`;
+
+            // Attendee information
+            document.getElementById('attendeeName').textContent = booking.user.name;
+            document.getElementById('attendeeEmail').textContent = booking.user.email;
+            document.getElementById('attendeePhone').textContent = booking.user.phone || 'Not provided';
+
+            // Special instructions
+            if (booking.event.specialRequirements) {
+                const instructionsSection = document.getElementById('specialInstructions');
+                const instructionsCard = instructionsSection.querySelector('.instructions-card');
+                const requirementsItem = document.createElement('div');
+                requirementsItem.className = 'instruction-item';
+                requirementsItem.innerHTML = `
+                    <i class="fas fa-info-circle"></i>
+                    <div>
+                        <h4>Special Requirements</h4>
+                        <p>${booking.event.specialRequirements}</p>
+                    </div>
+                `;
+                instructionsCard.appendChild(requirementsItem);
+            }
+
+            // Photography policy
+            const photoPolicyText = document.getElementById('photoPolicyText');
+            if (booking.event.allowPhotography === false) {
+                photoPolicyText.textContent = 'Photography and video recording not allowed during the event.';
+                document.getElementById('photoPolicy').querySelector('i').className = 'fas fa-camera-slash';
+            }
+
+            // Refund policy
+            document.getElementById('refundPolicy').textContent = getRefundPolicyText(booking.event.refundPolicy);
+
+            // Hide cancel button if not eligible
+            if (!canCancelBooking(booking)) {
+                document.getElementById('refundActions').style.display = 'none';
+            }
+
+            // Hide QR code for cancelled bookings
+            if (booking.status === 'cancelled') {
+                document.getElementById('qrCodeSection').style.display = 'none';
+            }
+        }
+
+        function generateQRCode(bookingId) {
+            const qrCodeElement = document.getElementById('qrCode');
+            
+            // Generate QR code with booking verification data
+            const qrData = JSON.stringify({
+                bookingId: bookingId,
+                reference: currentBooking.reference,
+                eventId: currentEvent._id,
+                userId: currentBooking.user._id,
+                timestamp: Date.now()
+            });
+
+            QRCode.toCanvas(qrCodeElement, qrData, {
+                width: 200,
+                height: 200,
+                margin: 2,
+                color: {
+                    dark: '#000000',
+                    light: '#FFFFFF'
+                }
+            }, function (error) {
+                if (error) {
+                    console.error('QR Code generation error:', error);
+                    qrCodeElement.innerHTML = '<p>Error generating QR code</p>';
+                }
+            });
+        }
+
+        function getRefundPolicyText(policy) {
+            const policies = {
+                'full-24h': 'Full refund available up to 24 hours before the event.',
+                'full-48h': 'Full refund available up to 48 hours before the event.',
+                'full-7d': 'Full refund available up to 7 days before the event.',
+                'partial': 'Partial refund may be available based on cancellation timing.',
+                'no-refund': 'No refunds available for this event.'
+            };
+            return policies[policy] || 'Please contact organizer for refund information.';
+        }
+
+        function canCancelBooking(booking) {
+            if (booking.status === 'cancelled') return false;
+            
+            const eventDate = new Date(booking.event.date);
+            const now = new Date();
+            const hoursUntilEvent = (eventDate - now) / (1000 * 60 * 60);
+
+            // Allow cancellation based on refund policy
+            switch (booking.event.refundPolicy) {
+                case 'full-24h':
+                    return hoursUntilEvent > 24;
+                case 'full-48h':
+                    return hoursUntilEvent > 48;
+                case 'full-7d':
+                    return hoursUntilEvent > (7 * 24);
+                case 'no-refund':
+                    return false;
+                default:
+                    return hoursUntilEvent > 24;
+            }
+        }
+
+        function showBookingNotFound() {
+            document.getElementById('pageLoading').classList.add('hidden');
+            document.getElementById('bookingDetailsPage').classList.add('hidden');
+            document.getElementById('bookingNotFound').classList.remove('hidden');
+        }
+
+        function viewEventDetails() {
+            window.location.href = `event-details.html?id=${currentEvent._id}`;
+        }
+
+        function downloadTicket() {
+            if (currentBooking.status !== 'confirmed') {
+                showNotification('Ticket can only be downloaded for confirmed bookings', 'warning');
+                return;
+            }
+
+            try {
+                // Create a simple ticket document
+                const ticketContent = `
+                    MEHFIL EVENT TICKET
+                    
+                    Event: ${currentEvent.title}
+                    Date: ${formatDate(currentEvent.date)}
+                    Time: ${formatTime(currentEvent.date)}
+                    Location: ${currentEvent.isOnline ? 'Online Event' : `${currentEvent.location}, ${currentEvent.city}`}
+                    
+                    Booking Reference: ${currentBooking.reference}
+                    Attendee: ${currentBooking.user.name}
+                    Tickets: ${currentBooking.quantity}
+                    Total: Rs. ${currentBooking.totalAmount}
+                    
+                    Please show this ticket and a valid ID at the entrance.
+                    For online events, you will receive the meeting link separately.
+                    
+                    Contact: support@mehfil.com
+                `;
+
+                const blob = new Blob([ticketContent], { type: 'text/plain' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `mehfil-ticket-${currentBooking.reference}.txt`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+
+                showNotification('Ticket downloaded successfully!', 'success');
+            } catch (error) {
+                console.error('Error downloading ticket:', error);
+                showNotification('Failed to download ticket', 'error');
+            }
+        }
+
+        function shareBooking() {
+            if (navigator.share) {
+                navigator.share({
+                    title: `${currentEvent.title} - My Booking`,
+                    text: `I'm attending ${currentEvent.title} on ${formatDate(currentEvent.date)}`,
+                    url: window.location.href
+                }).catch(console.error);
+            } else {
+                // Fallback: copy to clipboard
+                navigator.clipboard.writeText(window.location.href).then(() => {
+                    showNotification('Booking link copied to clipboard!', 'success');
+                }).catch(() => {
+                    showNotification('Failed to share booking', 'error');
+                });
+            }
+        }
+
+        function addToCalendar() {
+            const startDate = new Date(currentEvent.date);
+            const endDate = new Date(startDate.getTime() + (2 * 60 * 60 * 1000)); // Default 2 hours duration
+
+            const formatDateForCalendar = (date) => {
+                return date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+            };
+
+            const calendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE` +
+                `&text=${encodeURIComponent(currentEvent.title)}` +
+                `&dates=${formatDateForCalendar(startDate)}/${formatDateForCalendar(endDate)}` +
+                `&details=${encodeURIComponent(`Booking Reference: ${currentBooking.reference}\n\n${currentEvent.description}`)}` +
+                `&location=${encodeURIComponent(currentEvent.isOnline ? 'Online Event' : `${currentEvent.location}, ${currentEvent.city}`)}`;
+
+            window.open(calendarUrl, '_blank');
+        }
+
+        function contactOrganizer() {
+            if (currentEvent.contactInfo) {
+                showNotification('Organizer contact information available in event details', 'info');
+            } else {
+                showNotification('Contact support for organizer information', 'info');
+            }
+        }
+
+        function contactSupport() {
+            window.open('mailto:support@mehfil.com?subject=Booking Support - ' + currentBooking.reference, '_blank');
+        }
+
+        function cancelBooking() {
+            if (!canCancelBooking(currentBooking)) {
+                showNotification('This booking cannot be cancelled at this time', 'warning');
+                return;
+            }
+
+            // Calculate refund amount
+            const originalAmount = currentBooking.totalAmount;
+            const processingFee = Math.min(originalAmount * 0.05, 100); // 5% or Rs. 100 max
+            const refundAmount = Math.max(0, originalAmount - processingFee);
+
+            document.getElementById('originalAmount').textContent = `Rs. ${originalAmount}`;
+            document.getElementById('processingFee').textContent = `Rs. ${processingFee}`;
+            document.getElementById('refundAmount').textContent = `Rs. ${refundAmount}`;
+
+            showModal('cancelBookingModal');
+        }
+
+        async function confirmCancellation() {
+            try {
+                showLoading();
+                closeModal('cancelBookingModal');
+
+                const reason = document.getElementById('cancelReason').value;
+                const response = await api.cancelBooking(currentBooking._id, { reason });
+
+                if (response.success) {
+                    showNotification('Booking cancelled successfully. Refund will be processed within 3-5 business days.', 'success');
+                    
+                    // Reload booking details to show updated status
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 2000);
+                } else {
+                    throw new Error(response.message || 'Failed to cancel booking');
+                }
+
+                hideLoading();
+            } catch (error) {
+                hideLoading();
+                console.error('Error cancelling booking:', error);
+                showNotification(error.message || 'Failed to cancel booking', 'error');
+            }
+        }
+    </script>
+</body>
+</html>

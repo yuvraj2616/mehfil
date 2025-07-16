@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Event - Mehfil</title>
+    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <a href="index.html" class="brand-link">
+                    <i class="fas fa-masks"></i>
+                    <span class="brand-text">Mehfil</span>
+                </a>
+            </div>
+            
+            <div class="nav-menu" id="navMenu">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="events.html" class="nav-link">Events</a>
+                <a href="about.html" class="nav-link">About</a>
+                <a href="contact.html" class="nav-link">Contact</a>
+            </div>
+            
+            <div class="nav-user" id="navUser">
+                <div class="user-dropdown">
+                    <button class="user-btn" id="userBtn">
+                        <img src="assets/images/default-avatar.png" alt="Profile" class="user-avatar" id="userAvatar">
+                        <span class="user-name" id="userName">User</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="dropdown-menu" id="dropdownMenu">
+                        <a href="dashboard.html" class="dropdown-item">
+                            <i class="fas fa-tachometer-alt"></i> Dashboard
+                        </a>
+                        <a href="profile.html" class="dropdown-item">
+                            <i class="fas fa-user"></i> Profile
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <button class="dropdown-item logout-btn" id="logoutBtn">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="nav-toggle" id="navToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Create Event Container -->
+    <div class="create-event-container">
+        <div class="container">
+            <!-- Header -->
+            <div class="create-event-header">
+                <div class="breadcrumb">
+                    <a href="dashboard.html">Dashboard</a>
+                    <i class="fas fa-chevron-right"></i>
+                    <span id="pageTitle">Create Event</span>
+                </div>
+                <h1 id="mainTitle">Create New Event</h1>
+                <p>Share your cultural event with the community</p>
+            </div>
+
+            <!-- Event Form -->
+            <div class="create-event-form">
+                <form id="eventForm" onsubmit="submitEvent(event)">
+                    <!-- Step 1: Basic Information -->
+                    <div class="form-step active" id="step1">
+                        <div class="step-header">
+                            <h2>Basic Information</h2>
+                            <p>Tell us about your event</p>
+                        </div>
+                        
+                        <div class="form-section">
+                            <div class="form-group">
+                                <label for="eventTitle">Event Title *</label>
+                                <input type="text" id="eventTitle" name="title" required 
+                                       placeholder="Enter a catchy title for your event">
+                                <small class="form-help">Choose a clear, descriptive title that captures the essence of your event</small>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="eventDescription">Description *</label>
+                                <textarea id="eventDescription" name="description" rows="6" required
+                                          placeholder="Describe your event in detail..."></textarea>
+                                <div class="character-count">
+                                    <span id="descriptionCount">0</span>/2000 characters
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="eventCategory">Category *</label>
+                                    <select id="eventCategory" name="category" required>
+                                        <option value="">Select Category</option>
+                                        <option value="music">Music</option>
+                                        <option value="dance">Dance</option>
+                                        <option value="theater">Theater</option>
+                                        <option value="art">Art</option>
+                                        <option value="literature">Literature</option>
+                                        <option value="cultural">Cultural</option>
+                                        <option value="food">Food</option>
+                                        <option value="educational">Educational</option>
+                                        <option value="religious">Religious</option>
+                                        <option value="sports">Sports</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="eventLanguage">Language</label>
+                                    <select id="eventLanguage" name="language">
+                                        <option value="urdu">Urdu</option>
+                                        <option value="english">English</option>
+                                        <option value="punjabi">Punjabi</option>
+                                        <option value="sindhi">Sindhi</option>
+                                        <option value="pashto">Pashto</option>
+                                        <option value="balochi">Balochi</option>
+                                        <option value="mixed">Mixed Languages</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="eventTags">Tags</label>
+                                <input type="text" id="eventTags" name="tags" 
+                                       placeholder="Enter tags separated by commas (e.g., classical, traditional, family-friendly)">
+                                <small class="form-help">Add relevant tags to help people discover your event</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Date & Time -->
+                    <div class="form-step" id="step2">
+                        <div class="step-header">
+                            <h2>Date & Time</h2>
+                            <p>When will your event take place?</p>
+                        </div>
+                        
+                        <div class="form-section">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="eventDate">Event Date *</label>
+                                    <input type="date" id="eventDate" name="date" required>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="eventTime">Start Time *</label>
+                                    <input type="time" id="eventTime" name="time" required>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="eventDuration">Duration</label>
+                                    <select id="eventDuration" name="duration">
+                                        <option value="">Select Duration</option>
+                                        <option value="1 hour">1 Hour</option>
+                                        <option value="2 hours">2 Hours</option>
+                                        <option value="3 hours">3 Hours</option>
+                                        <option value="4 hours">4 Hours</option>
+                                        <option value="Half day">Half Day</option>
+                                        <option value="Full day">Full Day</option>
+                                        <option value="Multiple days">Multiple Days</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="eventEndDate">End Date (if multi-day)</label>
+                                    <input type="date" id="eventEndDate" name="endDate">
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="checkbox">
+                                    <input type="checkbox" id="isRecurring" name="isRecurring" onchange="toggleRecurring()">
+                                    <span class="checkmark"></span>
+                                    This is a recurring event
+                                </label>
+                            </div>
+                            
+                            <div class="recurring-options hidden" id="recurringOptions">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="recurringType">Repeat</label>
+                                        <select id="recurringType" name="recurringType">
+                                            <option value="daily">Daily</option>
+                                            <option value="weekly">Weekly</option>
+                                            <option value="monthly">Monthly</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="recurringEnd">Until</label>
+                                        <input type="date" id="recurringEnd" name="recurringEnd">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Location -->
+                    <div class="form-step" id="step3">
+                        <div class="step-header">
+                            <h2>Location</h2>
+                            <p>Where will your event be held?</p>
+                        </div>
+                        
+                        <div class="form-section">
+                            <div class="form-group">
+                                <label class="checkbox">
+                                    <input type="checkbox" id="isOnline" name="isOnline" onchange="toggleOnlineEvent()">
+                                    <span class="checkmark"></span>
+                                    This is an online event
+                                </label>
+                            </div>
+                            
+                            <div class="physical-location" id="physicalLocation">
+                                <div class="form-group">
+                                    <label for="venueName">Venue Name *</label>
+                                    <input type="text" id="venueName" name="venueName" 
+                                           placeholder="Enter venue name">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="venueAddress">Address *</label>
+                                    <textarea id="venueAddress" name="address" rows="3" 
+                                              placeholder="Enter complete address"></textarea>
+                                </div>
+                                
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="eventCity">City *</label>
+                                        <select id="eventCity" name="city">
+                                            <option value="">Select City</option>
+                                            <option value="karachi">Karachi</option>
+                                            <option value="lahore">Lahore</option>
+                                            <option value="islamabad">Islamabad</option>
+                                            <option value="peshawar">Peshawar</option>
+                                            <option value="quetta">Quetta</option>
+                                            <option value="faisalabad">Faisalabad</option>
+                                            <option value="multan">Multan</option>
+                                            <option value="hyderabad">Hyderabad</option>
+                                            <option value="gujranwala">Gujranwala</option>
+                                            <option value="sialkot">Sialkot</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="eventCountry">Country</label>
+                                        <select id="eventCountry" name="country">
+                                            <option value="pakistan">Pakistan</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="online-location hidden" id="onlineLocation">
+                                <div class="form-group">
+                                    <label for="meetingPlatform">Platform</label>
+                                    <select id="meetingPlatform" name="platform">
+                                        <option value="zoom">Zoom</option>
+                                        <option value="google-meet">Google Meet</option>
+                                        <option value="microsoft-teams">Microsoft Teams</option>
+                                        <option value="facebook-live">Facebook Live</option>
+                                        <option value="youtube-live">YouTube Live</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="meetingLink">Meeting Link</label>
+                                    <input type="url" id="meetingLink" name="meetingLink" 
+                                           placeholder="https://...">
+                                    <small class="form-help">This will be shared with attendees after booking</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 4: Tickets & Pricing -->
+                    <div class="form-step" id="step4">
+                        <div class="step-header">
+                            <h2>Tickets & Pricing</h2>
+                            <p>Set your event capacity and pricing</p>
+                        </div>
+                        
+                        <div class="form-section">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="maxCapacity">Maximum Capacity *</label>
+                                    <input type="number" id="maxCapacity" name="maxCapacity" min="1" required 
+                                           placeholder="e.g., 100">
+                                    <small class="form-help">Total number of people who can attend</small>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="ticketPrice">Ticket Price (PKR) *</label>
+                                    <input type="number" id="ticketPrice" name="ticketPrice" min="0" step="0.01" required 
+                                           placeholder="0.00">
+                                    <small class="form-help">Enter 0 for free events</small>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="checkbox">
+                                    <input type="checkbox" id="enableEarlyBird" name="enableEarlyBird" onchange="toggleEarlyBird()">
+                                    <span class="checkmark"></span>
+                                    Enable early bird pricing
+                                </label>
+                            </div>
+                            
+                            <div class="early-bird-options hidden" id="earlyBirdOptions">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="earlyBirdPrice">Early Bird Price (PKR)</label>
+                                        <input type="number" id="earlyBirdPrice" name="earlyBirdPrice" min="0" step="0.01">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="earlyBirdEnd">Early Bird Ends</label>
+                                        <input type="date" id="earlyBirdEnd" name="earlyBirdEnd">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="refundPolicy">Refund Policy</label>
+                                <select id="refundPolicy" name="refundPolicy">
+                                    <option value="full-24h">Full refund up to 24 hours before</option>
+                                    <option value="full-48h">Full refund up to 48 hours before</option>
+                                    <option value="full-7d">Full refund up to 7 days before</option>
+                                    <option value="partial">Partial refund policy</option>
+                                    <option value="no-refund">No refunds</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 5: Media & Details -->
+                    <div class="form-step" id="step5">
+                        <div class="step-header">
+                            <h2>Media & Additional Details</h2>
+                            <p>Add images and extra information</p>
+                        </div>
+                        
+                        <div class="form-section">
+                            <div class="form-group">
+                                <label>Event Image</label>
+                                <div class="image-upload-area" id="imageUploadArea">
+                                    <div class="upload-placeholder" id="uploadPlaceholder">
+                                        <i class="fas fa-image"></i>
+                                        <p>Click to upload or drag and drop</p>
+                                        <small>Recommended: 1200x630px, max 5MB</small>
+                                    </div>
+                                    <div class="image-preview hidden" id="imagePreview">
+                                        <img id="previewImage" src="" alt="Preview">
+                                        <button type="button" class="remove-image" onclick="removeImage()">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                    <input type="file" id="eventImage" name="image" accept="image/*" style="display: none;">
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="eventHighlights">Event Highlights</label>
+                                <div class="highlights-container">
+                                    <div class="highlight-item">
+                                        <input type="text" name="highlights[]" placeholder="Enter a highlight">
+                                        <button type="button" class="remove-highlight" onclick="removeHighlight(this)">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn btn-outline btn-sm" onclick="addHighlight()">
+                                    <i class="fas fa-plus"></i> Add Highlight
+                                </button>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="specialRequirements">Special Requirements</label>
+                                <textarea id="specialRequirements" name="specialRequirements" rows="3"
+                                          placeholder="Any special requirements or instructions for attendees..."></textarea>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="contactInfo">Contact Information</label>
+                                <textarea id="contactInfo" name="contactInfo" rows="3"
+                                          placeholder="Additional contact details for queries..."></textarea>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="checkbox">
+                                    <input type="checkbox" id="isPublic" name="isPublic" checked>
+                                    <span class="checkmark"></span>
+                                    Make this event public (visible to everyone)
+                                </label>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="checkbox">
+                                    <input type="checkbox" id="allowPhotography" name="allowPhotography" checked>
+                                    <span class="checkmark"></span>
+                                    Allow photography and video recording
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Form Navigation -->
+                    <div class="form-navigation">
+                        <button type="button" class="btn btn-outline" id="prevBtn" onclick="previousStep()" style="display: none;">
+                            <i class="fas fa-chevron-left"></i> Previous
+                        </button>
+                        
+                        <div class="step-indicators">
+                            <div class="step-indicator active" data-step="1">1</div>
+                            <div class="step-indicator" data-step="2">2</div>
+                            <div class="step-indicator" data-step="3">3</div>
+                            <div class="step-indicator" data-step="4">4</div>
+                            <div class="step-indicator" data-step="5">5</div>
+                        </div>
+                        
+                        <button type="button" class="btn btn-primary" id="nextBtn" onclick="nextStep()">
+                            Next <i class="fas fa-chevron-right"></i>
+                        </button>
+                        
+                        <button type="submit" class="btn btn-primary" id="submitBtn" style="display: none;">
+                            <i class="fas fa-calendar-plus"></i> Create Event
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay hidden" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <p>Creating your event...</p>
+    </div>
+
+    <!-- Notification -->
+    <div class="notification hidden" id="notification">
+        <span class="notification-message" id="notificationMessage"></span>
+        <button class="notification-close" id="notificationClose">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+
+    <!-- Scripts -->
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/utils.js"></script>
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/main.js"></script>
+    
+    <script>
+        let currentStep = 1;
+        let totalSteps = 5;
+        let eventId = null;
+        let isEditMode = false;
+
+        // Initialize create event page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check authentication and role
+            if (!auth.isAuthenticated()) {
+                window.location.href = 'auth.html';
+                return;
+            }
+
+            const user = auth.getCurrentUser();
+            if (user.role !== 'organizer' && user.role !== 'admin') {
+                showNotification('Access denied. Only organizers can create events.', 'error');
+                setTimeout(() => {
+                    window.location.href = 'dashboard.html';
+                }, 2000);
+                return;
+            }
+
+            // Check if editing existing event
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('edit')) {
+                eventId = urlParams.get('edit');
+                isEditMode = true;
+                loadEventForEdit(eventId);
+            }
+
+            initializeForm();
+            setupImageUpload();
+            setupFormValidation();
+        });
+
+        function initializeForm() {
+            // Set minimum date to today
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('eventDate').min = today;
+            document.getElementById('eventEndDate').min = today;
+            document.getElementById('earlyBirdEnd').min = today;
+            document.getElementById('recurringEnd').min = today;
+
+            // Description character count
+            const descriptionTextarea = document.getElementById('eventDescription');
+            const countElement = document.getElementById('descriptionCount');
+            
+            descriptionTextarea.addEventListener('input', function() {
+                const count = this.value.length;
+                countElement.textContent = count;
+                
+                if (count > 2000) {
+                    countElement.style.color = 'var(--error-color)';
+                } else {
+                    countElement.style.color = 'var(--text-muted)';
+                }
+            });
+
+            // Update title for edit mode
+            if (isEditMode) {
+                document.getElementById('pageTitle').textContent = 'Edit Event';
+                document.getElementById('mainTitle').textContent = 'Edit Event';
+                document.getElementById('submitBtn').innerHTML = '<i class="fas fa-save"></i> Update Event';
+            }
+        }
+
+        function setupImageUpload() {
+            const uploadArea = document.getElementById('imageUploadArea');
+            const fileInput = document.getElementById('eventImage');
+            const placeholder = document.getElementById('uploadPlaceholder');
+            const preview = document.getElementById('imagePreview');
+            const previewImage = document.getElementById('previewImage');
+
+            // Click to upload
+            uploadArea.addEventListener('click', function() {
+                fileInput.click();
+            });
+
+            // File input change
+            fileInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    if (file.size > 5 * 1024 * 1024) { // 5MB limit
+                        showNotification('Image size should be less than 5MB', 'error');
+                        return;
+                    }
+                    
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        previewImage.src = e.target.result;
+                        placeholder.classList.add('hidden');
+                        preview.classList.remove('hidden');
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            // Drag and drop
+            uploadArea.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                this.classList.add('drag-over');
+            });
+
+            uploadArea.addEventListener('dragleave', function() {
+                this.classList.remove('drag-over');
+            });
+
+            uploadArea.addEventListener('drop', function(e) {
+                e.preventDefault();
+                this.classList.remove('drag-over');
+                
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    fileInput.files = files;
+                    fileInput.dispatchEvent(new Event('change'));
+                }
+            });
+        }
+
+        function setupFormValidation() {
+            // Real-time validation
+            const requiredFields = document.querySelectorAll('[required]');
+            requiredFields.forEach(field => {
+                field.addEventListener('blur', function() {
+                    validateField(this);
+                });
+            });
+        }
+
+        function validateField(field) {
+            if (field.hasAttribute('required') && !field.value.trim()) {
+                field.classList.add('error');
+                return false;
+            } else {
+                field.classList.remove('error');
+                return true;
+            }
+        }
+
+        function validateStep(step) {
+            const stepElement = document.getElementById(`step${step}`);
+            const requiredFields = stepElement.querySelectorAll('[required]');
+            let isValid = true;
+
+            requiredFields.forEach(field => {
+                if (!validateField(field)) {
+                    isValid = false;
+                }
+            });
+
+            // Additional validations
+            if (step === 2) {
+                const eventDate = document.getElementById('eventDate').value;
+                const eventTime = document.getElementById('eventTime').value;
+                
+                if (eventDate && eventTime) {
+                    const eventDateTime = new Date(`${eventDate}T${eventTime}`);
+                    const now = new Date();
+                    
+                    if (eventDateTime <= now) {
+                        showNotification('Event must be scheduled for a future date and time', 'error');
+                        isValid = false;
+                    }
+                }
+            }
+
+            if (step === 3) {
+                const isOnline = document.getElementById('isOnline').checked;
+                if (!isOnline) {
+                    const venueName = document.getElementById('venueName');
+                    const venueAddress = document.getElementById('venueAddress');
+                    const eventCity = document.getElementById('eventCity');
+                    
+                    if (!validateField(venueName) || !validateField(venueAddress) || !validateField(eventCity)) {
+                        isValid = false;
+                    }
+                }
+            }
+
+            return isValid;
+        }
+
+        function nextStep() {
+            if (!validateStep(currentStep)) {
+                return;
+            }
+
+            if (currentStep < totalSteps) {
+                document.getElementById(`step${currentStep}`).classList.remove('active');
+                document.querySelector(`[data-step="${currentStep}"]`).classList.remove('active');
+                
+                currentStep++;
+                
+                document.getElementById(`step${currentStep}`).classList.add('active');
+                document.querySelector(`[data-step="${currentStep}"]`).classList.add('active');
+                
+                updateNavigation();
+            }
+        }
+
+        function previousStep() {
+            if (currentStep > 1) {
+                document.getElementById(`step${currentStep}`).classList.remove('active');
+                document.querySelector(`[data-step="${currentStep}"]`).classList.remove('active');
+                
+                currentStep--;
+                
+                document.getElementById(`step${currentStep}`).classList.add('active');
+                document.querySelector(`[data-step="${currentStep}"]`).classList.add('active');
+                
+                updateNavigation();
+            }
+        }
+
+        function updateNavigation() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const submitBtn = document.getElementById('submitBtn');
+
+            if (currentStep === 1) {
+                prevBtn.style.display = 'none';
+            } else {
+                prevBtn.style.display = 'inline-flex';
+            }
+
+            if (currentStep === totalSteps) {
+                nextBtn.style.display = 'none';
+                submitBtn.style.display = 'inline-flex';
+            } else {
+                nextBtn.style.display = 'inline-flex';
+                submitBtn.style.display = 'none';
+            }
+        }
+
+        function toggleRecurring() {
+            const isRecurring = document.getElementById('isRecurring').checked;
+            const recurringOptions = document.getElementById('recurringOptions');
+            
+            if (isRecurring) {
+                recurringOptions.classList.remove('hidden');
+            } else {
+                recurringOptions.classList.add('hidden');
+            }
+        }
+
+        function toggleOnlineEvent() {
+            const isOnline = document.getElementById('isOnline').checked;
+            const physicalLocation = document.getElementById('physicalLocation');
+            const onlineLocation = document.getElementById('onlineLocation');
+            
+            if (isOnline) {
+                physicalLocation.classList.add('hidden');
+                onlineLocation.classList.remove('hidden');
+                
+                // Remove required attributes from physical location fields
+                document.getElementById('venueName').removeAttribute('required');
+                document.getElementById('venueAddress').removeAttribute('required');
+                document.getElementById('eventCity').removeAttribute('required');
+            } else {
+                physicalLocation.classList.remove('hidden');
+                onlineLocation.classList.add('hidden');
+                
+                // Add required attributes to physical location fields
+                document.getElementById('venueName').setAttribute('required', '');
+                document.getElementById('venueAddress').setAttribute('required', '');
+                document.getElementById('eventCity').setAttribute('required', '');
+            }
+        }
+
+        function toggleEarlyBird() {
+            const enableEarlyBird = document.getElementById('enableEarlyBird').checked;
+            const earlyBirdOptions = document.getElementById('earlyBirdOptions');
+            
+            if (enableEarlyBird) {
+                earlyBirdOptions.classList.remove('hidden');
+            } else {
+                earlyBirdOptions.classList.add('hidden');
+            }
+        }
+
+        function addHighlight() {
+            const container = document.querySelector('.highlights-container');
+            const highlightItem = document.createElement('div');
+            highlightItem.className = 'highlight-item';
+            highlightItem.innerHTML = `
+                <input type="text" name="highlights[]" placeholder="Enter a highlight">
+                <button type="button" class="remove-highlight" onclick="removeHighlight(this)">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            container.appendChild(highlightItem);
+        }
+
+        function removeHighlight(button) {
+            const container = document.querySelector('.highlights-container');
+            if (container.children.length > 1) {
+                button.parentElement.remove();
+            }
+        }
+
+        function removeImage() {
+            const fileInput = document.getElementById('eventImage');
+            const placeholder = document.getElementById('uploadPlaceholder');
+            const preview = document.getElementById('imagePreview');
+            
+            fileInput.value = '';
+            placeholder.classList.remove('hidden');
+            preview.classList.add('hidden');
+        }
+
+        async function submitEvent(event) {
+            event.preventDefault();
+            
+            if (!validateStep(currentStep)) {
+                return;
+            }
+            
+            try {
+                showLoading();
+                
+                const formData = new FormData(event.target);
+                
+                // Process highlights
+                const highlights = [];
+                const highlightInputs = document.querySelectorAll('[name="highlights[]"]');
+                highlightInputs.forEach(input => {
+                    if (input.value.trim()) {
+                        highlights.push(input.value.trim());
+                    }
+                });
+                
+                // Prepare event data
+                const eventData = {
+                    title: formData.get('title'),
+                    description: formData.get('description'),
+                    category: formData.get('category'),
+                    language: formData.get('language'),
+                    tags: formData.get('tags')?.split(',').map(tag => tag.trim()).filter(tag => tag),
+                    date: formData.get('date'),
+                    time: formData.get('time'),
+                    duration: formData.get('duration'),
+                    endDate: formData.get('endDate'),
+                    isRecurring: formData.has('isRecurring'),
+                    recurringType: formData.get('recurringType'),
+                    recurringEnd: formData.get('recurringEnd'),
+                    isOnline: formData.has('isOnline'),
+                    venueName: formData.get('venueName'),
+                    address: formData.get('address'),
+                    city: formData.get('city'),
+                    country: formData.get('country'),
+                    platform: formData.get('platform'),
+                    meetingLink: formData.get('meetingLink'),
+                    maxCapacity: parseInt(formData.get('maxCapacity')),
+                    ticketPrice: parseFloat(formData.get('ticketPrice')),
+                    enableEarlyBird: formData.has('enableEarlyBird'),
+                    earlyBirdPrice: parseFloat(formData.get('earlyBirdPrice')),
+                    earlyBirdEnd: formData.get('earlyBirdEnd'),
+                    refundPolicy: formData.get('refundPolicy'),
+                    highlights: highlights,
+                    specialRequirements: formData.get('specialRequirements'),
+                    contactInfo: formData.get('contactInfo'),
+                    isPublic: formData.has('isPublic'),
+                    allowPhotography: formData.has('allowPhotography')
+                };
+                
+                // Remove empty fields
+                Object.keys(eventData).forEach(key => {
+                    if (eventData[key] === '' || eventData[key] === null || eventData[key] === undefined) {
+                        delete eventData[key];
+                    }
+                });
+                
+                let response;
+                if (isEditMode) {
+                    response = await api.updateEvent(eventId, eventData);
+                } else {
+                    response = await api.createEvent(eventData);
+                }
+                
+                if (response.success) {
+                    const createdEvent = response.event;
+                    
+                    // Upload image if provided
+                    const imageFile = document.getElementById('eventImage').files[0];
+                    if (imageFile) {
+                        const imageFormData = new FormData();
+                        imageFormData.append('image', imageFile);
+                        
+                        try {
+                            await api.uploadEventImage(createdEvent._id, imageFormData);
+                        } catch (imageError) {
+                            console.error('Error uploading image:', imageError);
+                            // Don't fail the entire process for image upload error
+                        }
+                    }
+                    
+                    hideLoading();
+                    showNotification(
+                        isEditMode ? 'Event updated successfully!' : 'Event created successfully!',
+                        'success'
+                    );
+                    
+                    setTimeout(() => {
+                        window.location.href = `event-details.html?id=${createdEvent._id}`;
+                    }, 2000);
+                } else {
+                    throw new Error(response.message || 'Failed to create event');
+                }
+            } catch (error) {
+                console.error('Error submitting event:', error);
+                hideLoading();
+                showNotification(error.message || 'Failed to create event. Please try again.', 'error');
+            }
+        }
+
+        async function loadEventForEdit(eventId) {
+            try {
+                showLoading();
+                
+                const response = await api.getEventDetails(eventId);
+                
+                if (response.success && response.event) {
+                    populateEventForm(response.event);
+                } else {
+                    throw new Error('Event not found');
+                }
+                
+                hideLoading();
+            } catch (error) {
+                console.error('Error loading event:', error);
+                hideLoading();
+                showNotification('Failed to load event for editing', 'error');
+                setTimeout(() => {
+                    window.location.href = 'dashboard.html';
+                }, 2000);
+            }
+        }
+
+        function populateEventForm(event) {
+            // Basic Information
+            document.getElementById('eventTitle').value = event.title || '';
+            document.getElementById('eventDescription').value = event.description || '';
+            document.getElementById('eventCategory').value = event.category || '';
+            document.getElementById('eventLanguage').value = event.language || '';
+            document.getElementById('eventTags').value = event.tags ? event.tags.join(', ') : '';
+            
+            // Date & Time
+            if (event.date) {
+                const eventDate = new Date(event.date);
+                document.getElementById('eventDate').value = eventDate.toISOString().split('T')[0];
+                document.getElementById('eventTime').value = eventDate.toTimeString().slice(0, 5);
+            }
+            document.getElementById('eventDuration').value = event.duration || '';
+            if (event.endDate) {
+                document.getElementById('eventEndDate').value = new Date(event.endDate).toISOString().split('T')[0];
+            }
+            
+            // Location
+            document.getElementById('isOnline').checked = event.isOnline || false;
+            toggleOnlineEvent();
+            
+            if (event.isOnline) {
+                document.getElementById('meetingPlatform').value = event.platform || '';
+                document.getElementById('meetingLink').value = event.meetingLink || '';
+            } else {
+                document.getElementById('venueName').value = event.venueName || '';
+                document.getElementById('venueAddress').value = event.address || '';
+                document.getElementById('eventCity').value = event.city || '';
+                document.getElementById('eventCountry').value = event.country || '';
+            }
+            
+            // Tickets & Pricing
+            document.getElementById('maxCapacity').value = event.maxCapacity || '';
+            document.getElementById('ticketPrice').value = event.ticketPrice || '';
+            document.getElementById('refundPolicy').value = event.refundPolicy || '';
+            
+            // Media & Details
+            if (event.image) {
+                document.getElementById('previewImage').src = event.image;
+                document.getElementById('uploadPlaceholder').classList.add('hidden');
+                document.getElementById('imagePreview').classList.remove('hidden');
+            }
+            
+            if (event.highlights && event.highlights.length > 0) {
+                const container = document.querySelector('.highlights-container');
+                container.innerHTML = '';
+                event.highlights.forEach(highlight => {
+                    const highlightItem = document.createElement('div');
+                    highlightItem.className = 'highlight-item';
+                    highlightItem.innerHTML = `
+                        <input type="text" name="highlights[]" value="${highlight}" placeholder="Enter a highlight">
+                        <button type="button" class="remove-highlight" onclick="removeHighlight(this)">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    `;
+                    container.appendChild(highlightItem);
+                });
+            }
+            
+            document.getElementById('specialRequirements').value = event.specialRequirements || '';
+            document.getElementById('contactInfo').value = event.contactInfo || '';
+            document.getElementById('isPublic').checked = event.isPublic !== false;
+            document.getElementById('allowPhotography').checked = event.allowPhotography !== false;
+            
+            // Update description count
+            const descCount = document.getElementById('eventDescription').value.length;
+            document.getElementById('descriptionCount').textContent = descCount;
+        }
+    </script>
+</body>
+</html>

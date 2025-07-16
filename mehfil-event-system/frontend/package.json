@@ -1,0 +1,78 @@
+{
+  "name": "mehfil-event-system-frontend",
+  "version": "1.0.0",
+  "description": "Comprehensive frontend for the Mehfil Event Management System with PWA support, real-time features, and multi-role user interface",
+  "main": "index.html",
+  "scripts": {
+    "start": "http-server . -p 3000 -c-1 --cors",
+    "dev": "http-server . -p 3000 -c-1 --cors -o",
+    "serve": "node server.js",
+    "build": "npm run minify && npm run optimize",
+    "minify": "echo 'Minification would happen here with build tools'",
+    "optimize": "echo 'Asset optimization would happen here'",
+    "test": "echo 'Open test-integration.html in browser for comprehensive testing'",
+    "lint": "echo 'Linting would happen here with ESLint'",
+    "format": "echo 'Code formatting would happen here with Prettier'",
+    "preview": "http-server . -p 8080 -o"
+  },
+  "keywords": [
+    "event-management",
+    "frontend",
+    "pwa",
+    "real-time",
+    "mehfil",
+    "cultural-events",
+    "booking-system",
+    "analytics",
+    "responsive",
+    "accessibility"
+  ],
+  "author": "Mehfil Development Team",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1",
+    "http-server": "^14.1.1"
+  },
+  "engines": {
+    "node": ">=14.0.0",
+    "npm": ">=6.0.0"
+  },
+  "browserslist": [
+    "Chrome >= 80",
+    "Firefox >= 75",
+    "Safari >= 13",
+    "Edge >= 80",
+    "iOS >= 13",
+    "Android >= 8"
+  ],
+  "config": {
+    "port": 3000,
+    "api_url": "http://localhost:5000"
+  },
+  "pwa": {
+    "name": "Mehfil Events",
+    "short_name": "Mehfil",
+    "description": "Cultural Event Management Platform",
+    "theme_color": "#667eea",
+    "background_color": "#ffffff",
+    "display": "standalone",
+    "orientation": "portrait-primary"
+  },
+  "features": [
+    "Progressive Web App (PWA)",
+    "Service Worker caching",
+    "Offline support",
+    "Push notifications",
+    "Real-time updates",
+    "Multi-role authentication",
+    "Event management",
+    "Booking system",
+    "Analytics dashboard",
+    "Reviews and ratings",
+    "Responsive design",
+    "Accessibility features"
+  ]
+}

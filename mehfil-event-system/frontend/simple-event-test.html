@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Event Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .event { border: 1px solid #ddd; padding: 15px; margin: 10px 0; }
+        .loading { color: #666; }
+        .error { color: red; }
+        .success { color: green; }
+    </style>
+</head>
+<body>
+    <h1>Simple Event Loading Test</h1>
+    <div id="status" class="loading">Loading events...</div>
+    <div id="events"></div>
+
+    <script>
+        console.log('Page loaded, starting event test...');
+        
+        async function testEvents() {
+            const statusDiv = document.getElementById('status');
+            const eventsDiv = document.getElementById('events');
+            
+            try {
+                console.log('Fetching events from API...');
+                statusDiv.textContent = 'Fetching events from API...';
+                
+                const response = await fetch('http://localhost:5000/api/events');
+                console.log('Response received:', response.status, response.statusText);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const events = await response.json();
+                console.log('Events parsed:', events.length, events);
+                
+                statusDiv.textContent = `✅ Successfully loaded ${events.length} events`;
+                statusDiv.className = 'success';
+                
+                if (events.length > 0) {
+                    eventsDiv.innerHTML = events.map(event => `
+                        <div class="event">
+                            <h3>${event.title}</h3>
+                            <p><strong>Category:</strong> ${event.category}</p>
+                            <p><strong>Date:</strong> ${new Date(event.dateTime.start).toLocaleString()}</p>
+                            <p><strong>Venue:</strong> ${event.venue.name}</p>
+                            <p>${event.description.substring(0, 100)}...</p>
+                        </div>
+                    `).join('');
+                } else {
+                    eventsDiv.innerHTML = '<p>No events found</p>';
+                }
+                
+            } catch (error) {
+                console.error('Error loading events:', error);
+                statusDiv.textContent = `❌ Error: ${error.message}`;
+                statusDiv.className = 'error';
+                eventsDiv.innerHTML = `<p class="error">Failed to load events: ${error.message}</p>`;
+            }
+        }
+        
+        // Start the test
+        testEvents();
+    </script>
+</body>
+</html>

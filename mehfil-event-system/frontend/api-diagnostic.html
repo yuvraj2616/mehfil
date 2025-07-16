@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Diagnostic Test - Mehfil</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+        .warning { background-color: #fff3cd; border-color: #ffeeba; }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #0056b3; }
+        pre {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 3px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+        .log { margin: 10px 0; padding: 10px; background: #f8f9fa; border-radius: 3px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 API Diagnostic Test</h1>
+        <p>This tool will diagnose the API connection and event loading issues.</p>
+        
+        <div class="test-section">
+            <h3>1. Backend Server Status</h3>
+            <button onclick="testBackendServer()">Test Backend Server</button>
+            <div id="backend-result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>2. API Endpoint Test</h3>
+            <button onclick="testAPIEndpoint()">Test /api/events</button>
+            <div id="api-result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>3. CORS Test</h3>
+            <button onclick="testCORS()">Test CORS Headers</button>
+            <div id="cors-result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>4. JavaScript Dependencies Test</h3>
+            <button onclick="testDependencies()">Test Dependencies</button>
+            <div id="deps-result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>5. Full Event Loading Test</h3>
+            <button onclick="testEventLoading()">Test Event Loading</button>
+            <div id="events-result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>6. Console Logs</h3>
+            <div id="console-logs"></div>
+        </div>
+    </div>
+
+    <script>
+        // Capture console logs
+        const originalLog = console.log;
+        const originalError = console.error;
+        const originalWarn = console.warn;
+        const logs = [];
+        
+        function captureLog(type, ...args) {
+            logs.push({type, message: args.join(' '), timestamp: new Date().toLocaleTimeString()});
+            updateConsoleLogs();
+        }
+        
+        console.log = (...args) => { originalLog(...args); captureLog('log', ...args); };
+        console.error = (...args) => { originalError(...args); captureLog('error', ...args); };
+        console.warn = (...args) => { originalWarn(...args); captureLog('warn', ...args); };
+        
+        function updateConsoleLogs() {
+            const logsDiv = document.getElementById('console-logs');
+            logsDiv.innerHTML = logs.slice(-10).map(log => 
+                `<div class="log" style="color: ${log.type === 'error' ? 'red' : log.type === 'warn' ? 'orange' : 'black'}">
+                    [${log.timestamp}] ${log.type.toUpperCase()}: ${log.message}
+                </div>`
+            ).join('');
+        }
+        
+        async function testBackendServer() {
+            const resultDiv = document.getElementById('backend-result');
+            resultDiv.innerHTML = '<p>Testing backend server...</p>';
+            
+            try {
+                const response = await fetch('http://localhost:5000/', {
+                    method: 'GET',
+                    mode: 'cors'
+                });
+                
+                if (response.ok) {
+                    const text = await response.text();
+                    resultDiv.innerHTML = `<div class="success">
+                        <strong>✅ Backend server is running!</strong>
+                        <pre>Status: ${response.status} ${response.statusText}</pre>
+                    </div>`;
+                } else {
+                    resultDiv.innerHTML = `<div class="error">
+                        <strong>❌ Backend server responded with error</strong>
+                        <pre>Status: ${response.status} ${response.statusText}</pre>
+                    </div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">
+                    <strong>❌ Cannot connect to backend server</strong>
+                    <pre>Error: ${error.message}</pre>
+                    <p>Make sure the backend server is running on http://localhost:5000</p>
+                </div>`;
+            }
+        }
+        
+        async function testAPIEndpoint() {
+            const resultDiv = document.getElementById('api-result');
+            resultDiv.innerHTML = '<p>Testing API endpoint...</p>';
+            
+            try {
+                const response = await fetch('http://localhost:5000/api/events', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    mode: 'cors'
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    resultDiv.innerHTML = `<div class="success">
+                        <strong>✅ API endpoint working!</strong>
+                        <pre>Status: ${response.status} ${response.statusText}
+Events found: ${data.length}
+Response: ${JSON.stringify(data.slice(0, 2), null, 2)}</pre>
+                    </div>`;
+                } else {
+                    const text = await response.text();
+                    resultDiv.innerHTML = `<div class="error">
+                        <strong>❌ API endpoint error</strong>
+                        <pre>Status: ${response.status} ${response.statusText}
+Response: ${text}</pre>
+                    </div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">
+                    <strong>❌ API endpoint failed</strong>
+                    <pre>Error: ${error.message}</pre>
+                </div>`;
+            }
+        }
+        
+        async function testCORS() {
+            const resultDiv = document.getElementById('cors-result');
+            resultDiv.innerHTML = '<p>Testing CORS headers...</p>';
+            
+            try {
+                const response = await fetch('http://localhost:5000/api/events', {
+                    method: 'OPTIONS'
+                });
+                
+                const corsHeaders = {
+                    'Access-Control-Allow-Origin': response.headers.get('Access-Control-Allow-Origin'),
+                    'Access-Control-Allow-Methods': response.headers.get('Access-Control-Allow-Methods'),
+                    'Access-Control-Allow-Headers': response.headers.get('Access-Control-Allow-Headers')
+                };
+                
+                resultDiv.innerHTML = `<div class="success">
+                    <strong>✅ CORS headers check</strong>
+                    <pre>CORS Headers:
+${JSON.stringify(corsHeaders, null, 2)}</pre>
+                </div>`;
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">
+                    <strong>❌ CORS test failed</strong>
+                    <pre>Error: ${error.message}</pre>
+                </div>`;
+            }
+        }
+        
+        function testDependencies() {
+            const resultDiv = document.getElementById('deps-result');
+            const dependencies = {
+                'CONFIG': typeof CONFIG !== 'undefined',
+                'window.api': typeof window.api !== 'undefined',
+                'window.auth': typeof window.auth !== 'undefined',
+                'showNotification': typeof showNotification !== 'undefined'
+            };
+            
+            const allLoaded = Object.values(dependencies).every(loaded => loaded);
+            
+            resultDiv.innerHTML = `<div class="${allLoaded ? 'success' : 'warning'}">
+                <strong>${allLoaded ? '✅' : '⚠️'} Dependencies check</strong>
+                <pre>${JSON.stringify(dependencies, null, 2)}</pre>
+            </div>`;
+        }
+        
+        async function testEventLoading() {
+            const resultDiv = document.getElementById('events-result');
+            resultDiv.innerHTML = '<p>Testing full event loading process...</p>';
+            
+            try {
+                // Test the same way index.html does it
+                console.log('Starting event loading test...');
+                
+                const response = await fetch('http://localhost:5000/api/events');
+                
+                if (response.ok) {
+                    const events = await response.json();
+                    console.log('Events loaded:', events.length);
+                    
+                    // Test event card creation
+                    const testHTML = events.slice(0, 1).map(event => `
+                        <div class="event-card">
+                            <h3>${event.title}</h3>
+                            <p>Date: ${new Date(event.dateTime.start).toLocaleDateString()}</p>
+                            <p>Venue: ${event.venue.name}</p>
+                        </div>
+                    `).join('');
+                    
+                    resultDiv.innerHTML = `<div class="success">
+                        <strong>✅ Event loading successful!</strong>
+                        <pre>Events loaded: ${events.length}
+Sample event HTML:
+${testHTML}</pre>
+                    </div>`;
+                } else {
+                    resultDiv.innerHTML = `<div class="error">
+                        <strong>❌ Event loading failed</strong>
+                        <pre>Status: ${response.status} ${response.statusText}</pre>
+                    </div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">
+                    <strong>❌ Event loading error</strong>
+                    <pre>Error: ${error.message}</pre>
+                </div>`;
+            }
+        }
+        
+        // Auto-run basic tests
+        window.addEventListener('load', () => {
+            console.log('Page loaded, starting automatic tests...');
+            testDependencies();
+            setTimeout(testBackendServer, 1000);
+        });
+    </script>
+</body>
+</html>

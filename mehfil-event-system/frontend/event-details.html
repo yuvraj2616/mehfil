@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Details - Mehfil</title>
+    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <a href="index.html" class="brand-link">
+                    <i class="fas fa-masks"></i>
+                    <span class="brand-text">Mehfil</span>
+                </a>
+            </div>
+            
+            <div class="nav-menu" id="navMenu">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="events.html" class="nav-link">Events</a>
+                <a href="about.html" class="nav-link">About</a>
+                <a href="contact.html" class="nav-link">Contact</a>
+            </div>
+            
+            <div class="nav-auth" id="navAuth">
+                <a href="auth.html" class="btn btn-outline">Login</a>
+                <a href="auth.html?register=true" class="btn btn-primary">Sign Up</a>
+            </div>
+            
+            <div class="nav-user hidden" id="navUser">
+                <div class="user-dropdown">
+                    <button class="user-btn" id="userBtn">
+                        <img src="assets/images/default-avatar.png" alt="Profile" class="user-avatar" id="userAvatar">
+                        <span class="user-name" id="userName">User</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="dropdown-menu" id="dropdownMenu">
+                        <a href="dashboard.html" class="dropdown-item">
+                            <i class="fas fa-tachometer-alt"></i> Dashboard
+                        </a>
+                        <a href="profile.html" class="dropdown-item">
+                            <i class="fas fa-user"></i> Profile
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <button class="dropdown-item logout-btn" id="logoutBtn">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="nav-toggle" id="navToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Event Details Loading -->
+    <div class="page-loading" id="pageLoading">
+        <div class="loading-spinner"></div>
+        <p>Loading event details...</p>
+    </div>
+
+    <!-- Event Details Content -->
+    <div class="event-details-page hidden" id="eventDetailsPage">
+        <!-- Event Hero -->
+        <section class="event-hero" id="eventHero">
+            <div class="event-hero-image">
+                <img id="eventHeroImage" src="" alt="Event Image">
+                <div class="event-hero-overlay">
+                    <div class="container">
+                        <div class="event-hero-content">
+                            <div class="event-breadcrumb">
+                                <a href="index.html">Home</a>
+                                <i class="fas fa-chevron-right"></i>
+                                <a href="events.html">Events</a>
+                                <i class="fas fa-chevron-right"></i>
+                                <span id="eventBreadcrumb">Event Details</span>
+                            </div>
+                            <h1 class="event-title" id="eventTitle"></h1>
+                            <div class="event-meta">
+                                <div class="event-meta-item">
+                                    <i class="fas fa-calendar"></i>
+                                    <span id="eventDate"></span>
+                                </div>
+                                <div class="event-meta-item">
+                                    <i class="fas fa-clock"></i>
+                                    <span id="eventTime"></span>
+                                </div>
+                                <div class="event-meta-item">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span id="eventLocation"></span>
+                                </div>
+                                <div class="event-meta-item">
+                                    <i class="fas fa-tag"></i>
+                                    <span id="eventCategory"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Event Details -->
+        <section class="event-details-section">
+            <div class="container">
+                <div class="event-details-grid">
+                    <!-- Main Content -->
+                    <div class="event-main-content">
+                        <div class="event-description">
+                            <h2>About This Event</h2>
+                            <div id="eventDescription"></div>
+                        </div>
+
+                        <div class="event-highlights">
+                            <h3>Event Highlights</h3>
+                            <ul id="eventHighlights"></ul>
+                        </div>
+
+                        <div class="event-organizer">
+                            <h3>Organized By</h3>
+                            <div class="organizer-info" id="organizerInfo">
+                                <img id="organizerAvatar" src="assets/images/default-avatar.png" alt="Organizer">
+                                <div class="organizer-details">
+                                    <h4 id="organizerName"></h4>
+                                    <p id="organizerBio"></p>
+                                    <div class="organizer-stats">
+                                        <span><i class="fas fa-calendar"></i> <span id="organizerEventsCount">0</span> Events</span>
+                                        <span><i class="fas fa-star"></i> <span id="organizerRating">0.0</span> Rating</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="event-artists" id="eventArtistsSection">
+                            <h3>Featured Artists</h3>
+                            <div class="artists-grid" id="artistsGrid"></div>
+                        </div>
+
+                        <div class="event-reviews" id="eventReviewsSection">
+                            <h3>Reviews & Ratings</h3>
+                            <div class="reviews-summary" id="reviewsSummary">
+                                <div class="rating-overview">
+                                    <div class="rating-score">
+                                        <span class="rating-number" id="averageRating">0.0</span>
+                                        <div class="rating-stars" id="ratingStars"></div>
+                                        <span class="rating-count" id="reviewCount">0 reviews</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="reviews-list" id="reviewsList"></div>
+                            <button class="btn btn-outline" id="loadMoreReviews">Load More Reviews</button>
+                        </div>
+                    </div>
+
+                    <!-- Sidebar -->
+                    <div class="event-sidebar">
+                        <div class="booking-card">
+                            <div class="price-info">
+                                <div class="price" id="eventPrice"></div>
+                                <div class="price-note">per person</div>
+                            </div>
+                            
+                            <div class="booking-form" id="bookingForm">
+                                <div class="form-group">
+                                    <label for="ticketQuantity">Number of Tickets</label>
+                                    <div class="quantity-selector">
+                                        <button type="button" class="quantity-btn" onclick="decreaseQuantity()">-</button>
+                                        <input type="number" id="ticketQuantity" value="1" min="1" max="10">
+                                        <button type="button" class="quantity-btn" onclick="increaseQuantity()">+</button>
+                                    </div>
+                                </div>
+                                
+                                <div class="total-price">
+                                    <span>Total: Rs. <span id="totalPrice">0</span></span>
+                                </div>
+                                
+                                <button class="btn btn-primary btn-large" id="bookNowBtn" onclick="bookEvent()">
+                                    <i class="fas fa-ticket-alt"></i> Book Now
+                                </button>
+                                
+                                <div class="booking-note">
+                                    <i class="fas fa-info-circle"></i>
+                                    Free cancellation up to 24 hours before the event
+                                </div>
+                            </div>
+                            
+                            <div class="event-stats">
+                                <div class="stat-item">
+                                    <i class="fas fa-users"></i>
+                                    <span><span id="attendeesCount">0</span>/<span id="maxCapacity">0</span> Attending</span>
+                                </div>
+                                <div class="stat-item">
+                                    <i class="fas fa-clock"></i>
+                                    <span id="duration">Duration: TBD</span>
+                                </div>
+                                <div class="stat-item">
+                                    <i class="fas fa-language"></i>
+                                    <span id="language">Language: TBD</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="share-card">
+                            <h4>Share This Event</h4>
+                            <div class="share-buttons">
+                                <button class="share-btn facebook" onclick="shareOnFacebook()">
+                                    <i class="fab fa-facebook"></i>
+                                </button>
+                                <button class="share-btn twitter" onclick="shareOnTwitter()">
+                                    <i class="fab fa-twitter"></i>
+                                </button>
+                                <button class="share-btn whatsapp" onclick="shareOnWhatsApp()">
+                                    <i class="fab fa-whatsapp"></i>
+                                </button>
+                                <button class="share-btn copy" onclick="copyEventLink()">
+                                    <i class="fas fa-link"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="related-events">
+                            <h4>Similar Events</h4>
+                            <div class="related-events-list" id="relatedEventsList"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Event Not Found -->
+    <div class="event-not-found hidden" id="eventNotFound">
+        <div class="container">
+            <div class="not-found-content">
+                <i class="fas fa-calendar-times"></i>
+                <h2>Event Not Found</h2>
+                <p>The event you're looking for doesn't exist or has been removed.</p>
+                <a href="events.html" class="btn btn-primary">Browse Events</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Booking Confirmation Modal -->
+    <div class="modal hidden" id="bookingConfirmationModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Confirm Booking</h3>
+                <button class="modal-close" onclick="closeModal('bookingConfirmationModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="booking-summary">
+                    <h4 id="confirmEventTitle"></h4>
+                    <div class="booking-details">
+                        <div class="detail-row">
+                            <span>Date:</span>
+                            <span id="confirmEventDate"></span>
+                        </div>
+                        <div class="detail-row">
+                            <span>Time:</span>
+                            <span id="confirmEventTime"></span>
+                        </div>
+                        <div class="detail-row">
+                            <span>Location:</span>
+                            <span id="confirmEventLocation"></span>
+                        </div>
+                        <div class="detail-row">
+                            <span>Tickets:</span>
+                            <span id="confirmTicketQuantity"></span>
+                        </div>
+                        <div class="detail-row total">
+                            <span>Total Amount:</span>
+                            <span>Rs. <span id="confirmTotalPrice"></span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('bookingConfirmationModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="confirmBooking()">Confirm Booking</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-brand">
+                        <i class="fas fa-masks"></i>
+                        <span>Mehfil</span>
+                    </div>
+                    <p>Connecting communities through cultural events and celebrations.</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="events.html">Events</a></li>
+                        <li><a href="about.html">About</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2024 Mehfil. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay hidden" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <p>Processing...</p>
+    </div>
+
+    <!-- Notification -->
+    <div class="notification hidden" id="notification">
+        <span class="notification-message" id="notificationMessage"></span>
+        <button class="notification-close" id="notificationClose">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+
+    <!-- Scripts -->
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/utils.js"></script>
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/main.js"></script>
+    
+    <script>
+        let currentEvent = null;
+        let currentQuantity = 1;
+
+        // Initialize event details page
+        document.addEventListener('DOMContentLoaded', function() {
+            const eventId = getEventIdFromUrl();
+            if (eventId) {
+                loadEventDetails(eventId);
+            } else {
+                showEventNotFound();
+            }
+        });
+
+        function getEventIdFromUrl() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('id');
+        }
+
+        async function loadEventDetails(eventId) {
+            const loadingEl = document.getElementById('pageLoading');
+            const contentEl = document.getElementById('eventDetailsPage');
+            const notFoundEl = document.getElementById('eventNotFound');
+
+            try {
+                loadingEl.classList.remove('hidden');
+                contentEl.classList.add('hidden');
+                notFoundEl.classList.add('hidden');
+
+                const response = await api.getEventDetails(eventId);
+                
+                if (response.success && response.event) {
+                    currentEvent = response.event;
+                    displayEventDetails(response.event);
+                    loadRelatedEvents(response.event.category, eventId);
+                    loadEventReviews(eventId);
+                    
+                    loadingEl.classList.add('hidden');
+                    contentEl.classList.remove('hidden');
+                } else {
+                    throw new Error('Event not found');
+                }
+            } catch (error) {
+                console.error('Error loading event details:', error);
+                loadingEl.classList.add('hidden');
+                showEventNotFound();
+            }
+        }
+
+        function displayEventDetails(event) {
+            // Update page title
+            document.title = `${event.title} - Mehfil`;
+
+            // Hero section
+            document.getElementById('eventHeroImage').src = event.image || 'assets/images/event-placeholder.jpg';
+            document.getElementById('eventBreadcrumb').textContent = event.title;
+            document.getElementById('eventTitle').textContent = event.title;
+            document.getElementById('eventDate').textContent = formatDate(event.date);
+            document.getElementById('eventTime').textContent = formatTime(event.date);
+            document.getElementById('eventLocation').textContent = `${event.location}, ${event.city}`;
+            document.getElementById('eventCategory').textContent = event.category;
+
+            // Description
+            document.getElementById('eventDescription').innerHTML = event.description.replace(/\n/g, '<br>');
+
+            // Highlights
+            const highlightsEl = document.getElementById('eventHighlights');
+            if (event.highlights && event.highlights.length > 0) {
+                highlightsEl.innerHTML = event.highlights.map(highlight => `<li>${highlight}</li>`).join('');
+            } else {
+                highlightsEl.parentElement.style.display = 'none';
+            }
+
+            // Organizer
+            if (event.organizer) {
+                document.getElementById('organizerAvatar').src = event.organizer.avatar || 'assets/images/default-avatar.png';
+                document.getElementById('organizerName').textContent = event.organizer.name;
+                document.getElementById('organizerBio').textContent = event.organizer.bio || 'Event organizer';
+                document.getElementById('organizerEventsCount').textContent = event.organizer.eventsCount || 0;
+                document.getElementById('organizerRating').textContent = (event.organizer.rating || 0).toFixed(1);
+            }
+
+            // Artists
+            const artistsSection = document.getElementById('eventArtistsSection');
+            if (event.artists && event.artists.length > 0) {
+                const artistsGrid = document.getElementById('artistsGrid');
+                artistsGrid.innerHTML = event.artists.map(artist => `
+                    <div class="artist-card">
+                        <img src="${artist.avatar || 'assets/images/default-avatar.png'}" alt="${artist.name}">
+                        <h4>${artist.name}</h4>
+                        <p>${artist.specialty || 'Artist'}</p>
+                    </div>
+                `).join('');
+            } else {
+                artistsSection.style.display = 'none';
+            }
+
+            // Pricing and booking
+            const priceEl = document.getElementById('eventPrice');
+            if (event.ticketPrice === 0) {
+                priceEl.innerHTML = 'Free';
+            } else {
+                priceEl.innerHTML = `Rs. ${event.ticketPrice}`;
+            }
+            updateTotalPrice();
+
+            // Stats
+            document.getElementById('attendeesCount').textContent = event.attendeesCount || 0;
+            document.getElementById('maxCapacity').textContent = event.maxCapacity;
+            document.getElementById('duration').textContent = `Duration: ${event.duration || 'TBD'}`;
+            document.getElementById('language').textContent = `Language: ${event.language || 'TBD'}`;
+
+            // Update quantity selector max
+            const quantityInput = document.getElementById('ticketQuantity');
+            const maxTickets = Math.min(10, event.maxCapacity - (event.attendeesCount || 0));
+            quantityInput.max = maxTickets;
+            
+            if (maxTickets === 0) {
+                document.getElementById('bookNowBtn').disabled = true;
+                document.getElementById('bookNowBtn').innerHTML = '<i class="fas fa-times"></i> Sold Out';
+            }
+        }
+
+        async function loadRelatedEvents(category, excludeId) {
+            try {
+                const response = await api.getEvents({ category, limit: 3 });
+                const relatedEvents = response.events.filter(event => event._id !== excludeId);
+                
+                const relatedEventsList = document.getElementById('relatedEventsList');
+                relatedEventsList.innerHTML = relatedEvents.map(event => `
+                    <div class="related-event-item" onclick="window.location.href='event-details.html?id=${event._id}'">
+                        <img src="${event.image || 'assets/images/event-placeholder.jpg'}" alt="${event.title}">
+                        <div class="related-event-info">
+                            <h5>${event.title}</h5>
+                            <p>${formatDate(event.date)}</p>
+                            <span class="price">${event.ticketPrice === 0 ? 'Free' : `Rs. ${event.ticketPrice}`}</span>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading related events:', error);
+            }
+        }
+
+        async function loadEventReviews(eventId) {
+            try {
+                const response = await api.getEventReviews(eventId);
+                
+                if (response.success) {
+                    displayReviews(response.reviews, response.summary);
+                }
+            } catch (error) {
+                console.error('Error loading reviews:', error);
+            }
+        }
+
+        function displayReviews(reviews, summary) {
+            // Summary
+            document.getElementById('averageRating').textContent = (summary.averageRating || 0).toFixed(1);
+            document.getElementById('reviewCount').textContent = `${summary.totalReviews || 0} reviews`;
+            
+            const starsEl = document.getElementById('ratingStars');
+            starsEl.innerHTML = generateStarRating(summary.averageRating || 0);
+
+            // Reviews list
+            const reviewsList = document.getElementById('reviewsList');
+            if (reviews && reviews.length > 0) {
+                reviewsList.innerHTML = reviews.map(review => `
+                    <div class="review-item">
+                        <div class="review-header">
+                            <img src="${review.user.avatar || 'assets/images/default-avatar.png'}" alt="${review.user.name}">
+                            <div class="review-meta">
+                                <h5>${review.user.name}</h5>
+                                <div class="review-rating">${generateStarRating(review.rating)}</div>
+                                <span class="review-date">${formatDate(review.createdAt)}</span>
+                            </div>
+                        </div>
+                        <p class="review-text">${review.comment}</p>
+                    </div>
+                `).join('');
+            } else {
+                reviewsList.innerHTML = '<p class="no-reviews">No reviews yet. Be the first to review!</p>';
+            }
+        }
+
+        function showEventNotFound() {
+            document.getElementById('pageLoading').classList.add('hidden');
+            document.getElementById('eventDetailsPage').classList.add('hidden');
+            document.getElementById('eventNotFound').classList.remove('hidden');
+        }
+
+        function increaseQuantity() {
+            const input = document.getElementById('ticketQuantity');
+            const max = parseInt(input.max);
+            if (parseInt(input.value) < max) {
+                input.value = parseInt(input.value) + 1;
+                currentQuantity = parseInt(input.value);
+                updateTotalPrice();
+            }
+        }
+
+        function decreaseQuantity() {
+            const input = document.getElementById('ticketQuantity');
+            if (parseInt(input.value) > 1) {
+                input.value = parseInt(input.value) - 1;
+                currentQuantity = parseInt(input.value);
+                updateTotalPrice();
+            }
+        }
+
+        function updateTotalPrice() {
+            if (currentEvent) {
+                const total = currentEvent.ticketPrice * currentQuantity;
+                document.getElementById('totalPrice').textContent = total;
+            }
+        }
+
+        function bookEvent() {
+            if (!auth.isAuthenticated()) {
+                showNotification('Please login to book events', 'warning');
+                setTimeout(() => {
+                    window.location.href = 'auth.html';
+                }, 2000);
+                return;
+            }
+
+            // Show confirmation modal
+            document.getElementById('confirmEventTitle').textContent = currentEvent.title;
+            document.getElementById('confirmEventDate').textContent = formatDate(currentEvent.date);
+            document.getElementById('confirmEventTime').textContent = formatTime(currentEvent.date);
+            document.getElementById('confirmEventLocation').textContent = `${currentEvent.location}, ${currentEvent.city}`;
+            document.getElementById('confirmTicketQuantity').textContent = currentQuantity;
+            document.getElementById('confirmTotalPrice').textContent = currentEvent.ticketPrice * currentQuantity;
+            
+            showModal('bookingConfirmationModal');
+        }
+
+        async function confirmBooking() {
+            try {
+                showLoading();
+                closeModal('bookingConfirmationModal');
+
+                const bookingData = {
+                    eventId: currentEvent._id,
+                    quantity: currentQuantity,
+                    totalAmount: currentEvent.ticketPrice * currentQuantity
+                };
+
+                const response = await api.bookEvent(bookingData);
+                hideLoading();
+
+                if (response.success) {
+                    showNotification('Event booked successfully!', 'success');
+                    setTimeout(() => {
+                        window.location.href = `booking-details.html?id=${response.booking._id}`;
+                    }, 2000);
+                } else {
+                    showNotification(response.message || 'Failed to book event', 'error');
+                }
+            } catch (error) {
+                hideLoading();
+                console.error('Error booking event:', error);
+                showNotification('Failed to book event. Please try again.', 'error');
+            }
+        }
+
+        // Quantity input change handler
+        document.getElementById('ticketQuantity').addEventListener('change', function() {
+            currentQuantity = parseInt(this.value);
+            updateTotalPrice();
+        });
+
+        // Share functions
+        function shareOnFacebook() {
+            const url = encodeURIComponent(window.location.href);
+            const title = encodeURIComponent(currentEvent.title);
+            window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}&t=${title}`, '_blank');
+        }
+
+        function shareOnTwitter() {
+            const url = encodeURIComponent(window.location.href);
+            const text = encodeURIComponent(`Check out this amazing event: ${currentEvent.title}`);
+            window.open(`https://twitter.com/intent/tweet?url=${url}&text=${text}`, '_blank');
+        }
+
+        function shareOnWhatsApp() {
+            const url = encodeURIComponent(window.location.href);
+            const text = encodeURIComponent(`Check out this event: ${currentEvent.title} - ${url}`);
+            window.open(`https://wa.me/?text=${text}`, '_blank');
+        }
+
+        function copyEventLink() {
+            navigator.clipboard.writeText(window.location.href).then(() => {
+                showNotification('Link copied to clipboard!', 'success');
+            }).catch(() => {
+                showNotification('Failed to copy link', 'error');
+            });
+        }
+
+        function generateStarRating(rating) {
+            const fullStars = Math.floor(rating);
+            const hasHalfStar = rating % 1 !== 0;
+            const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+            
+            let starsHtml = '';
+            
+            for (let i = 0; i < fullStars; i++) {
+                starsHtml += '<i class="fas fa-star"></i>';
+            }
+            
+            if (hasHalfStar) {
+                starsHtml += '<i class="fas fa-star-half-alt"></i>';
+            }
+            
+            for (let i = 0; i < emptyStars; i++) {
+                starsHtml += '<i class="far fa-star"></i>';
+            }
+            
+            return starsHtml;
+        }
+    </script>
+</body>
+</html>
