@@ -29,12 +29,12 @@ interface SidebarLink {
 const sidebarLinks: Record<string, SidebarLink[]> = {
   admin: [
     { href: "/dashboard/admin", label: "Overview", icon: <LayoutDashboard className="h-4 w-4" /> },
-    { href: "/dashboard/admin", label: "All Events", icon: <Calendar className="h-4 w-4" /> },
-    { href: "/admin/users", label: "Users", icon: <Users className="h-4 w-4" /> },
-    { href: "/dashboard/analytics", label: "Analytics", icon: <BarChart3 className="h-4 w-4" /> },
-    { href: "/admin/reviews", label: "Reviews", icon: <Star className="h-4 w-4" /> },
-    { href: "/admin/sponsors", label: "Sponsors", icon: <Briefcase className="h-4 w-4" /> },
-    { href: "/admin/settings", label: "Settings", icon: <Shield className="h-4 w-4" /> },
+    { href: "/events", label: "All Events", icon: <Calendar className="h-4 w-4" /> },
+    { href: "/dashboard/admin/users", label: "Users", icon: <Users className="h-4 w-4" /> },
+    { href: "/dashboard/analytics", label: "Global Analytics", icon: <BarChart3 className="h-4 w-4" /> },
+    { href: "/dashboard/admin/reviews", label: "Reviews", icon: <Star className="h-4 w-4" /> },
+    { href: "/dashboard/admin/sponsors", label: "Sponsors", icon: <Briefcase className="h-4 w-4" /> },
+    { href: "/dashboard/admin/settings", label: "Settings", icon: <Shield className="h-4 w-4" /> },
   ],
   organizer: [
     { href: "/dashboard/organizer", label: "Overview", icon: <LayoutDashboard className="h-4 w-4" /> },
@@ -51,7 +51,7 @@ const sidebarLinks: Record<string, SidebarLink[]> = {
   ],
   attendee: [
     { href: "/dashboard/attendee", label: "Overview", icon: <LayoutDashboard className="h-4 w-4" /> },
-    { href: "/dashboard/attendee", label: "My Bookings", icon: <Ticket className="h-4 w-4" /> },
+    { href: "/dashboard/attendee/bookings", label: "My Bookings", icon: <Ticket className="h-4 w-4" /> },
     { href: "/events", label: "Browse Events", icon: <Calendar className="h-4 w-4" /> },
   ],
 };
@@ -100,16 +100,6 @@ export function Sidebar() {
         })}
       </nav>
 
-      {/* Bottom Settings */}
-      <div className="border-t border-gray-800 pt-6 mt-6">
-        <Link
-          href="/settings"
-          className="flex items-center gap-3 px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-[0.1em] text-gray-500 hover:text-white hover:bg-[#111] transition-colors"
-        >
-          <Settings className="h-4 w-4" />
-          System Config
-        </Link>
-      </div>
     </aside>
   );
 }

@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -61,6 +63,8 @@ interface EventData {
   media: { banner?: string };
   status: string;
   is_featured: boolean;
+  avg_rating?: number;
+  review_count?: number;
   created_at: string;
   organizer: { user_id: string; name: string; avatar: string; role: string };
 }
@@ -85,7 +89,7 @@ export default function EventsPage() {
     params.set("limit", "12");
 
     try {
-      const res = await fetch(`/api/events?${params.toString()}`);
+      const res = await fetch(`${API_BASE}/events?${params.toString()}`);
       const data = await res.json();
       setEvents(data.events || []);
       setTotalPages(data.totalPages || 1);
@@ -303,9 +307,13 @@ export default function EventsPage() {
                             <IndianRupee className="h-4 w-4" />
                             {price !== null ? price.toLocaleString("en-IN") : "Free"}
                           </div>
-                          <span className="text-[9px] font-bold tracking-[0.2em] uppercase text-gray-600 truncate max-w-[100px] text-right">
-                            {event.organizer?.name || "Organizer"}
-                          </span>
+                          <div className="flex items-center gap-2">
+                            {event.avg_rating && event.avg_rating > 0 ? (
+                              <span className="flex items-center gap-1 text-[9px] font-black text-amber-400 bg-amber-400/10 border border-amber-400/20 px-2 py-1 rounded-full">
+                                ★ {event.avg_rating.toFixed(1)}
+                              </span>
+                            ) : null}
+                          </div>
                         </div>
                       </CardContent>
                     </Card>

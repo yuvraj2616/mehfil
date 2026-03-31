@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useUser } from "@/lib/hooks/use-user";
 import { createClient } from "@/lib/supabase/client";
+import { fetchAPIClient } from "@/lib/api-client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
@@ -23,7 +24,6 @@ export default function CheckoutPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { data: user, isLoading: userLoading } = useUser();
-  const supabase = createClient();
 
   const preselectedTicket = searchParams.get("ticket");
   const preselectedQty = parseInt(searchParams.get("qty") || "1", 10);
@@ -36,21 +36,17 @@ export default function CheckoutPage() {
   useEffect(() => {
     async function loadEvent() {
       if (!id) return;
-      const { data, error } = await supabase
-        .from("events")
-        .select("*")
-        .eq("id", id)
-        .single();
+      // Load event from Express backend (no auth needed for public event)
+      const data = await fetchAPIClient(`/events/${id}`, null);
 
-      if (error) {
+      if (!data?.event) {
         toast.error("Failed to load event for checkout");
       } else {
-        setEvent(data);
+        setEvent(data.event);
         if (preselectedTicket && !ticketSelection[preselectedTicket]) {
           setTicketSelection({ [preselectedTicket]: preselectedQty });
-        } else if (Object.keys(ticketSelection).length === 0 && data.ticketing?.length > 0) {
-          // Default to 1 of the first tier if nothing selected
-          setTicketSelection({ [data.ticketing[0].name]: 1 });
+        } else if (Object.keys(ticketSelection).length === 0 && data.event.ticketing?.length > 0) {
+          setTicketSelection({ [data.event.ticketing[0].name]: 1 });
         }
       }
       setLoading(false);
@@ -101,9 +97,13 @@ export default function CheckoutPage() {
 
     setProcessing(true);
     try {
-      const bookingRes = await fetch("/api/bookings", {
+      // Get auth token for API calls
+      const supabase = createClient();
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token || null;
+
+      const bookingData = await fetchAPIClient("/bookings", token, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           eventId: event.id,
           tickets: selectedTiers,
@@ -111,19 +111,18 @@ export default function CheckoutPage() {
         }),
       });
 
-      const { booking, error: bookingErr } = await bookingRes.json();
-      if (!bookingRes.ok) throw new Error(bookingErr || "Failed to create booking");
+      if (bookingData?.error) throw new Error(bookingData.error);
+      const booking = bookingData.booking;
 
       toast.info("Booking created, initiating payment...", { id: "payment-toast" });
 
-      const orderRes = await fetch("/api/payments/create-order", {
+      const orderData = await fetchAPIClient("/payments/create-order", token, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ bookingId: booking.id }),
       });
 
-      const { orderId, amount, currency, error: orderErr } = await orderRes.json();
-      if (!orderRes.ok) throw new Error(orderErr || "Failed to create Razorpay order");
+      if (orderData?.error) throw new Error(orderData.error);
+      const { orderId, amount, currency } = orderData;
 
       if (!window.Razorpay) {
         throw new Error("Razorpay SDK not loaded. Please try again.");
@@ -141,9 +140,8 @@ export default function CheckoutPage() {
         handler: async function (response: any) {
           try {
             toast.loading("Verifying payment...", { id: "verify-toast" });
-            const verifyRes = await fetch("/api/payments/verify", {
+            const verifyData = await fetchAPIClient("/payments/verify", token, {
               method: "POST",
-              headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
                 razorpay_order_id: response.razorpay_order_id,
                 razorpay_payment_id: response.razorpay_payment_id,
@@ -152,8 +150,7 @@ export default function CheckoutPage() {
               }),
             });
 
-            const verifyData = await verifyRes.json();
-            if (!verifyRes.ok) throw new Error(verifyData.error || "Payment verification failed");
+            if (verifyData?.error) throw new Error(verifyData.error);
 
             toast.success("Payment successful! Redirecting...", { id: "verify-toast" });
             router.push(`/events/${event.id}/book/success?booking=${booking.id}`);

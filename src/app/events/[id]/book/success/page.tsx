@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { fetchAPIClient } from "@/lib/api-client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { CheckCircle2, QrCode, Calendar, MapPin, Download, ArrowLeft } from "lucide-react";
@@ -14,7 +15,6 @@ export default function BookingSuccessPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const bookingId = searchParams.get("booking");
-  const supabase = createClient();
   
   const [booking, setBooking] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -26,20 +26,18 @@ export default function BookingSuccessPage() {
         return;
       }
       
-      const { data, error } = await supabase
-        .from("bookings")
-        .select(`
-          *,
-          event:events!event_id(id, title, date_time, venue, media)
-        `)
-        .eq("id", bookingId)
-        .single();
+      // Get auth token for the authenticated request
+      const supabase = createClient();
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token || null;
 
-      if (error) {
-        console.error(error);
+      const data = await fetchAPIClient(`/bookings/${bookingId}`, token);
+
+      if (data?.error) {
+        console.error(data.error);
         toast.error("Could not load booking details");
       } else {
-        setBooking(data);
+        setBooking(data?.booking);
       }
       setLoading(false);
     }

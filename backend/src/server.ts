@@ -1,0 +1,45 @@
+import express from "express";
+import cors from "cors";
+import * as dotenv from "dotenv";
+dotenv.config();
+
+import { optionalAuth } from "./middleware/auth";
+import eventsRouter from "./routes/events";
+import bookingsRouter from "./routes/bookings";
+import paymentsRouter from "./routes/payments";
+import reviewsRouter from "./routes/reviews";
+import profilesRouter from "./routes/profiles";
+import adminRouter from "./routes/admin";
+import followsRouter from "./routes/follows";
+import interactionsRouter from "./routes/interactions";
+import recommendationsRouter from "./routes/recommendations";
+
+const app = express();
+const PORT = process.env.PORT || 4000;
+
+// Middleware
+app.use(cors({ origin: "http://localhost:3000", credentials: true }));
+app.use(express.json());
+
+// Attach user to all requests if token is present (non-blocking)
+app.use(optionalAuth);
+
+// Routes
+app.use("/events", eventsRouter);
+app.use("/bookings", bookingsRouter);
+app.use("/payments", paymentsRouter);
+app.use("/reviews", reviewsRouter);
+app.use("/profiles", profilesRouter);
+app.use("/admin", adminRouter);
+app.use("/follows", followsRouter);
+app.use("/interactions", interactionsRouter);
+app.use("/recommendations", recommendationsRouter);
+
+// Health check
+app.get("/health", (_req, res) => {
+  res.json({ status: "ok", timestamp: new Date().toISOString() });
+});
+
+app.listen(PORT, () => {
+  console.log(`✅ Mehfil API running on http://localhost:${PORT}`);
+});

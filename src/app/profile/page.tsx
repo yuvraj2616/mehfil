@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 import { User, MapPin, Mail, Phone, Edit3, Save, X } from "lucide-react";
+import { fetchAPIClient } from "@/lib/api-client";
 
 export default function ProfilePage() {
   const { data: user, isLoading, refetch } = useUser();
@@ -44,15 +45,19 @@ export default function ProfilePage() {
   async function handleSave() {
     if (!user) return;
     setSaving(true);
+
+    // Get the session token from Supabase auth to send to backend
     const supabase = createClient();
+    const { data: { session } } = await supabase.auth.getSession();
+    const token = session?.access_token || null;
 
-    const { error } = await supabase
-      .from("profiles")
-      .update(form)
-      .eq("user_id", user.user_id);
+    const result = await fetchAPIClient("/profiles/me", token, {
+      method: "PUT",
+      body: JSON.stringify(form),
+    });
 
-    if (error) {
-      toast.error("Failed to update profile: " + error.message);
+    if (result?.error) {
+      toast.error("Failed to update profile: " + result.error);
     } else {
       toast.success("Profile updated successfully!");
       setEditing(false);

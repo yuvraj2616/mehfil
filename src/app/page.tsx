@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { createClient } from "@/lib/supabase/server";
+import { fetchAPI } from "@/lib/api";
 import { Play, Calendar, MapPin, IndianRupee } from "lucide-react";
 
 /* ============================================================ */
@@ -25,17 +25,9 @@ const organizerBenefits = [
 /* ============================================================ */
 
 export default async function HomePage() {
-  const supabase = await createClient();
-  
-  // Fetch real events for the attendee discovery section
-  const { data: popularEvents } = await supabase
-    .from("events")
-    .select("*, organizer:profiles!organizer_id(user_id, name)")
-    .eq("status", "published")
-    .order("created_at", { ascending: false })
-    .limit(4);
-
-  const events = popularEvents || [];
+  // Fetch events from Express backend
+  const data = await fetchAPI("/events?limit=4");
+  const events = data?.events || [];
   
   return (
     <div className="bg-[#050505] min-h-screen text-white overflow-hidden pb-0">
@@ -107,7 +99,7 @@ export default async function HomePage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {events.length > 0 ? (
-            events.map((event) => (
+            events.map((event: any) => (
               <div key={event.id} className="group cursor-pointer bg-[#0A0D15] rounded-xl overflow-hidden border border-gray-800 hover:border-primary/50 transition-all duration-300 hover:-translate-y-2 shadow-lg">
                 <div className="relative h-48 overflow-hidden">
                   <img 
@@ -230,7 +222,7 @@ export default async function HomePage() {
           </p>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-10">
-            {events.slice(0, 4).map((e, idx) => {
+            {events.slice(0, 4).map((e: any, idx: number) => {
               const placeholderImages = [
                 "https://images.unsplash.com/photo-1520694478166-daaaaaec74b4",
                 "https://images.unsplash.com/photo-1516280440502-12fc06d860e3",

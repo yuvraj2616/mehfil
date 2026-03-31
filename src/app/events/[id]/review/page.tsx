@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useUser } from "@/lib/hooks/use-user";
 import { createClient } from "@/lib/supabase/client";
+import { fetchAPIClient } from "@/lib/api-client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -17,7 +18,6 @@ export default function WriteReviewPage() {
   const { id: eventId } = useParams() as { id: string };
   const router = useRouter();
   const { data: user, isLoading: userLoading } = useUser();
-  const supabase = createClient();
 
   const [event, setEvent] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -36,13 +36,8 @@ export default function WriteReviewPage() {
   useEffect(() => {
     async function init() {
       if (!eventId) return;
-      const { data, error } = await supabase
-        .from("events")
-        .select("title, media, date_time")
-        .eq("id", eventId)
-        .single();
-
-      if (!error && data) setEvent(data);
+      const data = await fetchAPIClient(`/events/${eventId}`, null);
+      if (data?.event) setEvent(data.event);
       setLoading(false);
     }
     init();
@@ -90,9 +85,12 @@ export default function WriteReviewPage() {
 
     setSubmitting(true);
     try {
-      const res = await fetch("/api/reviews", {
+      const supabase = createClient();
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token || null;
+
+      const data = await fetchAPIClient("/reviews", token, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           eventId,
           ratings,
@@ -101,8 +99,7 @@ export default function WriteReviewPage() {
         })
       });
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to submit review");
+      if (data?.error) throw new Error(data.error);
 
       toast.success("Telemetry received. Thank you.");
       router.push(`/events/${eventId}`);

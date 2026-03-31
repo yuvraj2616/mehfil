@@ -3,11 +3,12 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScanLine, CheckCircle2, AlertCircle, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
+import clientApi from "@/lib/client-api";
 
 export default function CheckInPage() {
   const router = useRouter();
@@ -27,32 +28,23 @@ export default function CheckInPage() {
     setLastResult(null);
 
     try {
-      const response = await fetch("/api/bookings/check-in", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code: checkInCode }),
+      const data = await clientApi.post("/bookings/check-in", { code: checkInCode });
+
+      setLastResult({
+        success: true,
+        eventTitle: data.eventTitle,
+        tickets: data.tickets
       });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        setLastResult({
-          success: false,
-          error: data.error,
-          scannedAt: data.scannedAt
-        });
-        toast.error(data.error || "Check-in parameters invalid");
-      } else {
-        setLastResult({
-          success: true,
-          eventTitle: data.eventTitle,
-          tickets: data.tickets
-        });
-        toast.success("Access Granted");
-        setCode(""); // Clear input on success
-      }
-    } catch (error: any) {
-      toast.error("Network communication failure. Retrying...");
+      toast.success("Access Granted");
+      setCode("");
+    } catch (err: any) {
+      const message = err?.message || "Check-in parameters invalid";
+      // If it includes scannedAt info, parse it from the error message
+      setLastResult({
+        success: false,
+        error: message,
+      });
+      toast.error(message);
     } finally {
       setIsProcessing(false);
     }

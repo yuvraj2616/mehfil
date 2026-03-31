@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { fetchAPI } from "@/lib/api";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -18,6 +18,7 @@ import {
   Star,
 } from "lucide-react";
 import { EventReviews } from "@/components/events/EventReviews";
+import { FollowButton } from "@/components/ui/FollowButton";
 
 const categoryColors: Record<string, string> = {
   poetry: "bg-purple-900/40 text-purple-300 border-purple-500/30",
@@ -35,15 +36,11 @@ interface EventPageProps {
 
 export default async function EventDetailsPage({ params }: EventPageProps) {
   const { id } = await params;
-  const supabase = await createClient();
 
-  const { data: event, error } = await supabase
-    .from("events")
-    .select("*, organizer:profiles!organizer_id(user_id, name, avatar, bio, role)")
-    .eq("id", id)
-    .single();
+  const data = await fetchAPI(`/events/${id}`);
+  const event = data?.event;
 
-  if (error || !event) notFound();
+  if (!event) notFound();
 
   const startDate = event.date_time?.start
     ? new Date(event.date_time.start)
@@ -339,6 +336,16 @@ export default async function EventDetailsPage({ params }: EventPageProps) {
                 <p className="text-sm text-gray-400 font-medium mt-6 line-clamp-3 leading-relaxed">
                   {event.organizer.bio}
                 </p>
+              )}
+              {event.organizer?.user_id && (
+                <div className="mt-6 pt-6 border-t border-gray-800">
+                  <FollowButton
+                    targetUserId={event.organizer.user_id}
+                    targetName={event.organizer.name || "this host"}
+                    showCount={true}
+                    className="text-[10px] h-9 px-5"
+                  />
+                </div>
               )}
             </div>
           </div>

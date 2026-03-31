@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import { fetchAPI } from "@/lib/api";
 
 export default async function DashboardRedirect() {
   const supabase = await createClient();
@@ -9,12 +10,8 @@ export default async function DashboardRedirect() {
 
   if (!user) redirect("/auth");
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("role")
-    .eq("user_id", user.id)
-    .single();
-
-  const role = profile?.role || "attendee";
+  // Fetch profile role from backend API
+  const data = await fetchAPI(`/profiles/me`);
+  const role = data?.profile?.role || "attendee";
   redirect(`/dashboard/${role}`);
 }

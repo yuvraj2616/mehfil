@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useUser } from "@/lib/hooks/use-user";
+import clientApi from "@/lib/client-api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -147,16 +148,10 @@ export default function CreateEventPage() {
         status: publishStatus,
       };
 
-      const res = await fetch("/api/events", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
+      const data = await clientApi.post("/events", body);
 
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.error || "Failed to create event");
+      if (!data?.event) {
+        throw new Error("Failed to create event");
       }
 
       toast.success(
