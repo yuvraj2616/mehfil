@@ -10,6 +10,7 @@ import { CheckCircle2, QrCode, Calendar, MapPin, Download, ArrowLeft } from "luc
 import Link from "next/link";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
+import { QRCodeSVG } from "qrcode.react";
 
 export default function BookingSuccessPage() {
   const searchParams = useSearchParams();
@@ -165,8 +166,18 @@ export default function BookingSuccessPage() {
                 <div className="absolute -bottom-2 -left-2 w-4 h-4 border-b-2 border-l-2 border-primary"></div>
                 <div className="absolute -bottom-2 -right-2 w-4 h-4 border-b-2 border-r-2 border-primary"></div>
                 
-                {/* Dummy QR code using an icon since we don't have a QR library yet */}
-                <QrCode className="w-40 h-40 text-black outline-none" strokeWidth={1.5} />
+                {booking.check_in?.code ? (
+                  <QRCodeSVG
+                    value={booking.check_in.code}
+                    size={160}
+                    bgColor={"#FFFFFF"}
+                    fgColor={"#000000"}
+                    level={"H"}
+                    includeMargin={false}
+                  />
+                ) : (
+                  <QrCode className="w-40 h-40 text-black outline-none opacity-20" strokeWidth={1.5} />
+                )}
               </div>
               
               <p className="font-mono text-xl font-black tracking-[0.4em] bg-[#111] border border-gray-800 px-6 py-3 rounded-xl text-white shadow-inner">

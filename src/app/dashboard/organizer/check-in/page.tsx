@@ -9,12 +9,14 @@ import Link from "next/link";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import clientApi from "@/lib/client-api";
+import { QRScanner } from "@/components/events/QRScanner";
 
 export default function CheckInPage() {
   const router = useRouter();
   const [code, setCode] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
   const [lastResult, setLastResult] = useState<any>(null);
+  const [isScanning, setIsScanning] = useState(false);
 
   async function handleManualSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -69,6 +71,31 @@ export default function CheckInPage() {
           Manual input terminal. Awaiting CHK- code.
         </p>
       </div>
+
+      <div className="flex justify-center mb-8">
+        <Button 
+          variant="outline" 
+          onClick={() => setIsScanning(!isScanning)}
+          className={`border-Emerald-500/50 uppercase tracking-widest font-black text-xs ${isScanning ? "bg-emerald-500 text-black border-none" : "text-emerald-500 hover:bg-emerald-500/10"}`}
+        >
+          {isScanning ? "Disable Scanner" : "Enable Optical Scanner"}
+        </Button>
+      </div>
+
+      {isScanning && (
+        <div className="mb-12 animate-in slide-in-from-top-4 duration-300">
+          <QRScanner 
+            isScanning={true} 
+            onScan={(resultCode) => {
+               if(!isProcessing && resultCode !== code) {
+                 setCode(resultCode);
+                 processCode(resultCode);
+                 setIsScanning(false); // Turn off after successful read to prevent spam
+               }
+            }} 
+          />
+        </div>
+      )}
 
       <Card className="bg-[#0A0D15] border-gray-800 overflow-hidden shadow-2xl shadow-emerald-500/5 rounded-2xl relative">
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-400 to-teal-500"></div>
@@ -137,10 +164,6 @@ export default function CheckInPage() {
         </Card>
       )}
 
-      <div className="text-center text-[10px] uppercase font-bold tracking-[0.2em] text-gray-600 bg-[#050505] border border-gray-800 p-6 rounded-2xl border-dashed">
-        <p>Optical scanner interface currently offline.</p>
-        <p className="mt-2 text-primary">Awaiting camera module integration.</p>
-      </div>
     </div>
   );
 }

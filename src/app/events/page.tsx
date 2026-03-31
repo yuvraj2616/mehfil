@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { TrendingEvents } from "@/components/events/TrendingEvents";
+import { EventMap } from "@/components/events/EventMap";
 import {
   Select,
   SelectContent,
@@ -30,6 +31,8 @@ import {
   Palette,
   Heart,
   Filter,
+  Map,
+  LayoutGrid
 } from "lucide-react";
 
 const categories = [
@@ -60,6 +63,8 @@ interface EventData {
   category: string;
   date_time: { start?: string; end?: string };
   venue: { name?: string; city?: string; address?: string; capacity?: number };
+  venue_lat?: number;
+  venue_lng?: number;
   ticketing: Array<{ name: string; price: number; quantity: number }>;
   media: { banner?: string };
   status: string;
@@ -75,6 +80,7 @@ export default function EventsPage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("all");
+  const [viewMode, setViewMode] = useState<"list" | "map">("list");
   const [city, setCity] = useState("");
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -207,15 +213,37 @@ export default function EventsPage() {
       {/* Results */}
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
         {/* Results header */}
-        <div className="flex items-center justify-between mb-8 border-b border-gray-800 pb-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8 border-b border-gray-800 pb-4">
           <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-gray-500">
             {loading ? "[ scanning network ]" : `[ ${total} EVENT${total !== 1 ? "S" : ""} FOUND ]`}
           </p>
-          {total > 0 && (
-            <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-gray-500">
-              PAGE {page} OF {totalPages}
-            </p>
-          )}
+          
+          <div className="flex items-center gap-4 w-full sm:w-auto overflow-x-auto">
+            <div className="flex bg-[#050505] border border-gray-800 rounded-full p-1 ml-auto shrink-0">
+              <button
+                onClick={() => setViewMode("list")}
+                className={`flex items-center gap-2 px-4 py-2 rounded-full text-[9px] font-black uppercase tracking-widest transition-all ${
+                  viewMode === "list" ? "bg-primary text-black" : "text-gray-500 hover:text-white"
+                }`}
+              >
+                <LayoutGrid className="w-3 h-3" /> List
+              </button>
+              <button
+                onClick={() => setViewMode("map")}
+                className={`flex items-center gap-2 px-4 py-2 rounded-full text-[9px] font-black uppercase tracking-widest transition-all ${
+                  viewMode === "map" ? "bg-primary text-black" : "text-gray-500 hover:text-white"
+                }`}
+              >
+                <Map className="w-3 h-3" /> Map
+              </button>
+            </div>
+
+            {total > 0 && viewMode === "list" && (
+              <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-gray-500 whitespace-nowrap">
+                PAGE {page} OF {totalPages}
+              </p>
+            )}
+          </div>
         </div>
 
         {/* Loading */}
@@ -231,6 +259,13 @@ export default function EventsPage() {
                 </CardContent>
               </Card>
             ))}
+          </div>
+        )}
+
+        {/* Map View */}
+        {!loading && viewMode === "map" && events.length > 0 && (
+          <div className="animate-in fade-in duration-500">
+            <EventMap events={events} />
           </div>
         )}
 
@@ -255,9 +290,9 @@ export default function EventsPage() {
         )}
 
         {/* Event Grid */}
-        {!loading && events.length > 0 && (
+        {!loading && viewMode === "list" && events.length > 0 && (
           <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 animate-in slide-in-from-bottom-4 duration-500">
               {events.map((event) => {
                 const price = getLowestPrice(event.ticketing);
                 return (
