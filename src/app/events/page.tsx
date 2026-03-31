@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { TrendingEvents } from "@/components/events/TrendingEvents";
 import {
   Select,
   SelectContent,
@@ -199,6 +200,9 @@ export default function EventsPage() {
           </div>
         </div>
       </section>
+
+      {/* Trending Events Carousel */}
+      <TrendingEvents />
 
       {/* Results */}
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">

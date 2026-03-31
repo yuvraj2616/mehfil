@@ -2,6 +2,7 @@ import { Router, Request, Response } from "express";
 import crypto from "crypto";
 import { createAuthClient } from "../supabaseClient";
 import { requireAuth } from "../middleware/auth";
+import { emitToUser } from "../socket";
 
 const router = Router();
 
@@ -131,6 +132,34 @@ router.post("/verify", requireAuth, async (req: Request, res: Response) => {
       .eq("attendee_id", user.id);
 
     if (bookingError) throw bookingError;
+
+    // Fetch the event title for the notification
+    const { data: bookingDetail } = await supabase
+      .from("bookings")
+      .select("event:events(id, title)")
+      .eq("id", bookingId)
+      .single();
+
+    const evt: any = bookingDetail?.event;
+    const eventTitle = Array.isArray(evt) ? evt[0]?.title : evt?.title || "your event";
+    const eventId = Array.isArray(evt) ? evt[0]?.id : evt?.id;
+
+    // Create Notification
+    const { data: notif } = await supabase
+      .from("notifications")
+      .insert({
+        user_id: user.id,
+        title: "Booking Confirmed! 🎉",
+        message: `Your tickets for ${eventTitle} have been secured.`,
+        type: "booking",
+        link: `/events/${eventId}/book` // or to a specific tickets page
+      })
+      .select()
+      .single();
+
+    if (notif) {
+      emitToUser(user.id, "new-notification", notif);
+    }
 
     return res.json({ success: true, checkInCode });
   } catch (error: any) {

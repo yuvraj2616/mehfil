@@ -1,6 +1,7 @@
 import { Router, Request, Response } from "express";
 import { createAuthClient, supabasePublic } from "../supabaseClient";
 import { requireAuth } from "../middleware/auth";
+import { emitToUser } from "../socket";
 
 const router = Router();
 
@@ -12,7 +13,7 @@ router.post("/:userId", requireAuth, async (req: Request, res: Response) => {
   try {
     const supabase = createAuthClient(req.token!);
     const currentUser = req.user!;
-    const targetUserId = req.params.userId;
+    const targetUserId = req.params.userId as string;
 
     if (currentUser.id === targetUserId) {
       return res.status(400).json({ error: "You cannot follow yourself" });
@@ -43,6 +44,32 @@ router.post("/:userId", requireAuth, async (req: Request, res: Response) => {
         .insert({ follower_id: currentUser.id, following_id: targetUserId });
 
       if (error) throw error;
+
+      // Extract follower name for the notification
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("name")
+        .eq("user_id", currentUser.id)
+        .single();
+      const followerName = profile?.name || "Someone";
+
+      // Insert and emit notification
+      const { data: notif } = await supabase
+        .from("notifications")
+        .insert({
+          user_id: targetUserId,
+          title: "New Follower! 👤",
+          message: `${followerName} started following you.`,
+          type: "follow",
+          link: `/profile/${currentUser.id}`
+        })
+        .select()
+        .single();
+
+      if (notif) {
+        emitToUser(targetUserId, "new-notification", notif);
+      }
+
       return res.json({ following: true, message: "Following successfully" });
     }
   } catch (error: any) {

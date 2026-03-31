@@ -23,6 +23,7 @@ import {
   Search,
 } from "lucide-react";
 import { useState, useEffect } from "react";
+import { NotificationBell } from "@/components/ui/NotificationBell";
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -102,6 +103,8 @@ export function Navbar() {
           >
             <Search className="h-5 w-5" />
           </button>
+
+          {user && <NotificationBell />}
 
           {isLoading ? (
             <div className="h-10 w-10 animate-pulse rounded-full bg-muted" />

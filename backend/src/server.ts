@@ -1,6 +1,8 @@
 import express from "express";
 import cors from "cors";
 import * as dotenv from "dotenv";
+import http from "http";
+import { initSocketIO } from "./socket";
 dotenv.config();
 
 import { optionalAuth } from "./middleware/auth";
@@ -13,9 +15,14 @@ import adminRouter from "./routes/admin";
 import followsRouter from "./routes/follows";
 import interactionsRouter from "./routes/interactions";
 import recommendationsRouter from "./routes/recommendations";
+import notificationsRouter from "./routes/notifications";
 
 const app = express();
+const server = http.createServer(app);
 const PORT = process.env.PORT || 4000;
+
+// Initialize WebSockets
+initSocketIO(server);
 
 // Middleware
 app.use(cors({ origin: "http://localhost:3000", credentials: true }));
@@ -34,12 +41,13 @@ app.use("/admin", adminRouter);
 app.use("/follows", followsRouter);
 app.use("/interactions", interactionsRouter);
 app.use("/recommendations", recommendationsRouter);
+app.use("/notifications", notificationsRouter);
 
 // Health check
 app.get("/health", (_req, res) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() });
 });
 
-app.listen(PORT, () => {
-  console.log(`✅ Mehfil API running on http://localhost:${PORT}`);
+server.listen(PORT, () => {
+  console.log(`✅ Mehfil API + WebSockets running on http://localhost:${PORT}`);
 });
